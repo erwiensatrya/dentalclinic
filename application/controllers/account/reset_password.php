@@ -13,7 +13,7 @@ class Reset_password extends CI_Controller {
 
 		// Load the necessary stuff...
 		$this->load->config('account/account');
-		$this->load->helper(array('date', 'language', 'account/ssl', 'url'));
+		$this->load->helper(array('date', 'language', 'account/ssl', 'url', 'photo'));
 		$this->load->library(array('account/authentication', 'account/authorization', 'account/recaptcha', 'form_validation'));
 		$this->load->model(array('account/account_model'));
 		$this->load->language(array('general', 'account/reset_password'));

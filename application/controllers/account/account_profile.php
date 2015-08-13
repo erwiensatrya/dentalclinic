@@ -33,6 +33,10 @@ class Account_profile extends CI_Controller {
 			redirect('account/sign_in/?continue='.urlencode(base_url().'account/account_profile'));
 		}
 
+		// Active Sidebar_L Menu
+		$data['accountinfo'] = true;
+		$data['accountprofile'] = true;
+		
 		// Retrieve sign in user
 		$data['account'] = $this->account_model->get_by_id($this->session->userdata('account_id'));
 		$data['account_details'] = $this->account_details_model->get_by_account_id($this->session->userdata('account_id'));

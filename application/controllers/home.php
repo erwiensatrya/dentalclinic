@@ -7,9 +7,9 @@ class Home extends CI_Controller {
 		parent::__construct();
 
 		// Load the necessary stuff...
-		$this->load->helper(array('language', 'url', 'form', 'account/ssl'));
+		$this->load->helper(array('language', 'url', 'form', 'account/ssl','photo'));
 		$this->load->library(array('account/authentication', 'account/authorization'));
-		$this->load->model(array('account/account_model'));
+		$this->load->model(array('account/account_model','account/account_details_model'));
 	}
 
 	function index()
@@ -19,6 +19,7 @@ class Home extends CI_Controller {
 		if ($this->authentication->is_signed_in())
 		{
 			$data['account'] = $this->account_model->get_by_id($this->session->userdata('account_id'));
+			$data['account_details'] = $this->account_details_model->get_by_account_id($this->session->userdata('account_id'));
 		}
 
 		$this->load->view('home', isset($data) ? $data : NULL);

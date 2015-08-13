@@ -31,7 +31,7 @@ class Sign_in extends CI_Controller {
 		maintain_ssl($this->config->item("ssl_enabled"));
 
 		// Redirect signed in users to homepage
-		if ($this->authentication->is_signed_in()) redirect('');
+		if ($this->authentication->is_signed_in()) redirect('dashboard');
 
 		// Set default recaptcha pass
 		$recaptcha_pass = $this->session->userdata('sign_in_failed_attempts') < $this->config->item('sign_in_recaptcha_offset') ? TRUE : FALSE;
@@ -96,7 +96,6 @@ class Sign_in extends CI_Controller {
 		if ($this->config->item("sign_in_recaptcha_enabled") === TRUE)
 			if ($this->config->item('sign_in_recaptcha_offset') <= $this->session->userdata('sign_in_failed_attempts'))
 				$data['recaptcha'] = $this->recaptcha->load($recaptcha_result, $this->config->item("ssl_enabled"));
-
 		// Load sign in view
 		$this->load->view('sign_in', isset($data) ? $data : NULL);
 	}
