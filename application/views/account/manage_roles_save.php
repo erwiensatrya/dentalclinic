@@ -66,7 +66,7 @@
 						?>
 						<label class="control-label" for="inputError"><i class="fa fa-times-circle-o"></i>
 						<?php
-							echo form_error('role_name');
+							echo form_error('role_name',' ',' ');
 							echo isset($role_name_error) ? $role_name_error : '';
 							?>
 						</label>
@@ -85,7 +85,7 @@
 						?>
 						<label class="control-label" for="inputError"><i class="fa fa-times-circle-o"></i>
 						<?php
-							echo form_error('role_description');
+							echo form_error('role_description',' ',' ');
 							?>
 						</label>
 						<?php } ?>

@@ -239,7 +239,7 @@
                   <!-- Menu Footer-->
                   <li class="user-footer">
                     <div class="pull-left">
-                      <?php echo anchor('account/account_profile', lang('dashboard_profile'),array('class' => 'btn btn-default btn-flat')); ?>
+                      <?php echo anchor('account/dashboard', lang('website_my_profile'),array('class' => 'btn btn-default btn-flat')); ?>
                     </div>
                     <div class="pull-right">
 					  <?php echo anchor('account/sign_out', lang('website_sign_out'),array('class' => 'btn btn-default btn-flat')); ?>

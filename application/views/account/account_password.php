@@ -67,7 +67,7 @@
 						?>
 						<label class="control-label" for="inputError"><i class="fa fa-times-circle-o"></i>
 						<?php
-							echo form_error('password_new_password');
+							echo form_error('password_new_password',' ',' ');
 							?>
 						</label>
 						<?php } ?>
@@ -85,7 +85,7 @@
 						?>
 						<label class="control-label" for="inputError"><i class="fa fa-times-circle-o"></i>
 						<?php
-							echo form_error('password_retype_new_password');
+							echo form_error('password_retype_new_password',' ',' ');
 							?>
 						</label>
 						<?php } ?>

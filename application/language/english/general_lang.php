@@ -24,6 +24,13 @@ $lang['website_create'] = 'Create';
 $lang['website_update'] = 'Update';
 $lang['website_cancel'] = 'Cancel';
 
+$lang['dashboard_title'] = 'Dashboard';
+$lang['calendar_title'] = 'Calendar';
+$lang['file_title'] = 'Files & folder';
+$lang['file_management'] = 'Management';
+
+$lang['website_my_profile'] = 'Profile';
+
 $lang['account_info_title'] = 'Account Info';
 $lang['account_info_account'] = 'Account Settings';
 $lang['account_info_profile'] = 'Manage Profile';
@@ -34,9 +41,7 @@ $lang['admin_panel_title'] = 'Admin Panel';
 $lang['admin_panel_manage_users'] = 'Manage Users';
 $lang['admin_panel_manage_permissions'] = 'Manage Permissions';
 $lang['admin_panel_manage_roles'] = 'Manage Roles';
-
-$lang['dashboard_title'] = 'Dashboard';
-$lang['dashboard_profile'] = 'Profile';
+$lang['admin_panel_manage_files'] = 'Manage Files';
 
 /* End of file general_lang.php */
 /* Location: ./application/language/english/general_lang.php */

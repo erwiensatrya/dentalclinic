@@ -66,7 +66,7 @@
 						?>
 						<label class="control-label" for="inputError"><i class="fa fa-times-circle-o"></i>
 						<?php
-							echo form_error('users_username');
+							echo form_error('users_username',' ',' ');
 							echo isset($users_username_error) ? $users_username_error : '';
 						?>
 						</label>
@@ -85,7 +85,7 @@
 						?>
 						<label class="control-label" for="inputError"><i class="fa fa-times-circle-o"></i>
 						<?php
-							echo form_error('users_email');
+							echo form_error('users_email',' ',' ');
 							echo isset($settings_email_error) ? $settings_email_error : '';
 							?>
 						</label>
@@ -106,7 +106,7 @@
 						?>
 						<label class="control-label" for="inputError"><i class="fa fa-times-circle-o"></i>
 						<?php
-							echo form_error('users_fullname');
+							echo form_error('users_fullname',' ',' ');
 						?>
 						</label>
 						<?php } ?>
@@ -124,7 +124,7 @@
 						?>
 						<label class="control-label" for="inputError"><i class="fa fa-times-circle-o"></i>
 						<?php
-							echo form_error('users_firstname');
+							echo form_error('users_firstname',' ',' ');
 						?>
 						</label>
 						<?php } ?>
@@ -142,7 +142,7 @@
 						?>
 						<label class="control-label" for="inputError"><i class="fa fa-times-circle-o"></i>
 						<?php
-							echo form_error('users_lastname');
+							echo form_error('users_lastname',' ',' ');
 							?>
 						</label>
 						<?php } ?>

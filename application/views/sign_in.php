@@ -40,7 +40,7 @@
           <div class="form-group has-feedback <?php echo (form_error('sign_in_username_email') || isset($sign_in_username_email_error)) ? 'has-error' : ''; ?>">
             <?php if (form_error('sign_in_username_email') || isset($sign_in_username_email_error)) :?>
 				<label class="control-label" for="inputError"><i class="fa fa-times-circle-o"></i>
-				<?php echo form_error('sign_in_username_email'); ?>
+				<?php echo form_error('sign_in_username_email',' ',' '); ?>
 				<?php if (isset($sign_in_username_email_error)) : ?>
 					<span class="field_error"><?php echo $sign_in_username_email_error; ?></span>
 				<?php endif; ?>
@@ -51,7 +51,7 @@
           </div>
           <div class="form-group has-feedback <?php echo form_error('sign_in_password') ? 'has-error' : ''; ?>">
 			<?php if (form_error('sign_in_password')) : ?>
-				<label class="control-label" for="inputError"><i class="fa fa-times-circle-o"></i><?php echo form_error('sign_in_password'); ?></label>
+				<label class="control-label" for="inputError"><i class="fa fa-times-circle-o"></i><?php echo form_error('sign_in_password', ' ',' '); ?></label>
 			<?php endif; ?>
 			<?php echo form_password(array('class'=>'form-control','placeholder'=> lang('sign_in_password'),'name' => 'sign_in_password', 'id' => 'sign_in_password', 'value' => set_value('sign_in_password'))); ?>
             <span class="glyphicon glyphicon-lock form-control-feedback"></span>

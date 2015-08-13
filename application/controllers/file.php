@@ -1,6 +1,6 @@
 <?php
 
-class Dashboard extends CI_Controller {
+class File extends CI_Controller {
 
 	function __construct()
 	{
@@ -31,7 +31,7 @@ class Dashboard extends CI_Controller {
 		}
 
 		
-		$this->load->view('dashboard', isset($data) ? $data : NULL);
+		$this->load->view('file', isset($data) ? $data : NULL);
 	}
 
 }

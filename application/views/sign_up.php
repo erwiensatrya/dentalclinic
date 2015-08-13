@@ -60,7 +60,7 @@
             
 			<?php if (form_error('sign_up_email') || isset($sign_up_email_error)) : ?>
 				<label class="control-label" for="inputError"><i class="fa fa-times-circle-o"></i>
-				<?php echo form_error('sign_up_email'); ?>
+				<?php echo form_error('sign_up_email',' ',' '); ?>
 				<?php if (isset($sign_up_email_error)) : ?>
 					<span class="field_error"><?php echo $sign_up_email_error; ?></span>
 				<?php endif; ?>
@@ -74,7 +74,7 @@
            
 		   <?php if (form_error('sign_up_password')) : ?>
 				<label class="control-label" for="inputError"><i class="fa fa-times-circle-o"></i>
-				<?php echo form_error('sign_up_password'); ?>
+				<?php echo form_error('sign_up_password',' ',' '); ?>
 				</label>
 			<?php endif; ?>
 			

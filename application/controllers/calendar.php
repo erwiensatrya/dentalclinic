@@ -1,6 +1,6 @@
 <?php
 
-class Dashboard extends CI_Controller {
+class Calendar extends CI_Controller {
 
 	function __construct()
 	{
@@ -29,9 +29,9 @@ class Dashboard extends CI_Controller {
 			$data['account'] = $this->account_model->get_by_id($this->session->userdata('account_id'));
 			$data['account_details'] = $this->account_details_model->get_by_account_id($this->session->userdata('account_id'));
 		}
-
+		$data['calendar'] = true;
 		
-		$this->load->view('dashboard', isset($data) ? $data : NULL);
+		$this->load->view('calendar', isset($data) ? $data : NULL);
 	}
 
 }

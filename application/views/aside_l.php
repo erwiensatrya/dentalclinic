@@ -62,9 +62,24 @@
 				<?php if ($this->authorization->is_permitted('retrieve_permissions')) : ?>
 				<li class="<?php echo (isset($managepermissions))? 'active':''?>"><a href="<?php echo base_url(); ?>account/manage_permissions"><i class="fa fa-circle-o"></i>  <?php echo lang('admin_panel_manage_permissions'); ?></a></li>
 				<?php endif; ?>
+				
+				<?php if ($this->authorization->is_permitted('retrieve_files')) : ?>
+				<li class="<?php echo (isset($managefiles))? 'active':''?>"><a href="<?php echo base_url(); ?>account/manage_files"><i class="fa fa-circle-o"></i>  <?php echo lang('admin_panel_manage_files'); ?></a></li>
+				<?php endif; ?>
 			 </ul>
             </li>
 			<?php endif; ?>
+			 <li class="<?php echo (isset($accountprofile))? 'active':''?>">
+              <a href="<?php echo base_url(); ?>calendar">
+                <i class="fa fa-calendar"></i> <span><?php echo lang('calendar_title'); ?></span>
+                <small class="label pull-right bg-red">3</small>
+              </a>
+            </li>
+			<li class="<?php echo (isset($filefolder))? 'active':''?>">
+              <a href="<?php echo base_url(); ?>file">
+                <i class="fa fa-folder"></i> <span><?php echo lang('file_title'); ?></span>
+              </a>
+            </li>
             <li class="treeview">
               <a href="#">
                 <i class="fa fa-files-o"></i>

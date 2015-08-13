@@ -66,7 +66,7 @@
 						?>
 						<label class="control-label" for="inputError"><i class="fa fa-times-circle-o"></i>
 						<?php
-							echo form_error('profile_username');
+							echo form_error('profile_username',' ',' ');
 							echo isset($profile_username_error) ? $profile_username_error : '';
 							?>
 						</label>

@@ -203,6 +203,12 @@ class Manage_users extends CI_Controller {
             $this->input->post('users_username', TRUE), 
             $this->input->post('users_email', TRUE), 
             $this->input->post('users_new_password', TRUE));
+			
+			if (!file_exists(base_url().RES_DIR."/".$id)) {
+				mkdir(base_url().RES_DIR."/".$id);
+				copy( base_url().RES_DIR."/user/index.html", base_url().RES_DIR."/user/".$id."/index.html" );
+			}
+
         }
         // Update existing user information
         else 

@@ -66,7 +66,7 @@
 						?>
 						<label class="control-label" for="inputError"><i class="fa fa-times-circle-o"></i>
 						<?php
-							echo form_error('permission_key');
+							echo form_error('permission_key',' ',' ');
 							echo isset($permission_key_error) ? $permission_key_error : '';
 							?>
 						</label>
@@ -85,7 +85,7 @@
 						?>
 						<label class="control-label" for="inputError"><i class="fa fa-times-circle-o"></i>
 						<?php
-							echo form_error('permission_description');
+							echo form_error('permission_description',' ',' ');
 							?>
 						</label>
 						<?php } ?>
