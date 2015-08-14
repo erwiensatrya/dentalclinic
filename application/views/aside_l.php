@@ -80,6 +80,11 @@
                 <i class="fa fa-folder"></i> <span><?php echo lang('file_title'); ?></span>
               </a>
             </li>
+			<li class="<?php echo (isset($qrcodescanner))? 'active':''?>">
+              <a href="<?php echo base_url(); ?>qrscanner">
+                <i class="fa fa-qrcode"></i> <span><?php echo lang('qrscanner_title'); ?></span>
+              </a>
+            </li>
             <li class="treeview">
               <a href="#">
                 <i class="fa fa-files-o"></i>

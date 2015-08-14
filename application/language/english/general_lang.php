@@ -30,6 +30,7 @@ $lang['file_title'] = 'Files & folder';
 $lang['file_management'] = 'Management';
 
 $lang['website_my_profile'] = 'Profile';
+$lang['qrscanner_title'] = 'QR Code Scanner';
 
 $lang['account_info_title'] = 'Account Info';
 $lang['account_info_account'] = 'Account Settings';
