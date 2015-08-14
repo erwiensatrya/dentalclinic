@@ -110,7 +110,7 @@
                   <h3 class="text-center"><b>Dental Clinic</b> member card</h3>
                 </div><!-- /.box-header -->
                 <div class="box-body text-center">
-                   <img src="http://localhost/dentalclinic/resource/img/default-qrcode.png" title="User's Photo" alt="User's Photo" >
+                   <img src="http://localhost/dentalclinic/resource/user/<?php echo $account->id ?>/qr-<?php echo $account->id ?>.png" title="User's QRCode" alt="User's QRCode" >
 				   <h3>#1dfs9834hjvsd72</h3>
 				   <hr/>
 				   <?php echo $account->email; ?>
@@ -122,7 +122,7 @@
                 <div class="box-footer">
                   <div class="row no-print">
 					<div class="col-xs-12">
-					  <a href="invoice-print.html" target="_blank" class="btn btn-default"><i class="fa fa-print"></i> Print</a>
+					  <a href="card.php?id=<?php echo $account->id; ?>" target="_blank" class="btn btn-default"><i class="fa fa-print"></i> Print</a>
 					  <button class="btn btn-primary pull-right" style="margin-right: 5px;"><i class="fa fa-download"></i> Generate PDF</button>
 					</div>
 				  </div>

@@ -204,9 +204,16 @@ class Manage_users extends CI_Controller {
             $this->input->post('users_email', TRUE), 
             $this->input->post('users_new_password', TRUE));
 			
-			if (!file_exists(base_url().RES_DIR."/".$id)) {
-				mkdir(base_url().RES_DIR."/".$id);
-				copy( base_url().RES_DIR."/user/index.html", base_url().RES_DIR."/user/".$id."/index.html" );
+			 // Create folder for specific user if not found
+			if (!file_exists(RES_DIR."/user/".$id)) {
+				mkdir(RES_DIR."/user/".$id);
+				copy(RES_DIR."/user/index.html", RES_DIR."/user/".$id."/index.html" );
+			}
+			
+			// Generate QR Code
+			if (!file_exists(RES_DIR."/user/".$id."/qr-".$id.".png")) {
+				include RES_DIR.'/adminlte/plugins/qrcode/phpqrcode/qrlib.php';
+				QRcode::png("#".$id."#".$this->input->post('users_username', TRUE)."#".$this->input->post('users_email', TRUE), RES_DIR."/user/".$id."/qr-".$id.".png", "H", 10, 2);
 			}
 
         }
@@ -240,6 +247,18 @@ class Manage_users extends CI_Controller {
               $this->account_model->remove_suspended_datetime($id);
             }
           }
+		  	
+		    // Create folder for specific user if not found
+			if (!file_exists(RES_DIR."/user/".$id)) {
+				mkdir(RES_DIR."/user/".$id);
+				copy(RES_DIR."/user/index.html", RES_DIR."/user/".$id."/index.html" );
+			}
+			
+			// Generate QR Code
+			if (!file_exists(RES_DIR."/user/".$id."/qr-".$id.".png")) {
+				include RES_DIR.'/adminlte/plugins/qrcode/phpqrcode/qrlib.php';
+				QRcode::png("#".$id."#".$this->input->post('users_username', TRUE)."#".$this->input->post('users_email', TRUE), RES_DIR."/user/".$id."/qr-".$id.".png", "H", 10, 2);
+			}		
         }
 
         // Update account details
