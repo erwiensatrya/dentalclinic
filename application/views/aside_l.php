@@ -85,6 +85,12 @@
                 <i class="fa fa-qrcode"></i> <span><?php echo lang('qrscanner_title'); ?></span>
               </a>
             </li>
+			<li class="<?php echo (isset($mail))? 'active':''?>">
+              <a href="<?php echo base_url(); ?>mail">
+                <i class="fa fa-envelope"></i> <span>Mailbox</span>
+                <?php if(isset($totalunread)){ echo '<small class="label pull-right bg-yellow">'.$totalunread.'</small>'; } ?>
+              </a>
+            </li>
             <li class="treeview">
               <a href="#">
                 <i class="fa fa-files-o"></i>

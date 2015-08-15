@@ -1,4 +1,4 @@
-<!-- jQuery 2.1.4 -->
+	<!-- jQuery 2.1.4 -->
     <script src="<?php echo base_url().RES_DIR; ?>/adminlte/plugins/jQuery/jQuery-2.1.4.min.js" type="text/javascript"></script>
     <!-- Bootstrap 3.3.2 JS -->
     <script src="<?php echo base_url().RES_DIR; ?>/adminlte/bootstrap/js/bootstrap.min.js" type="text/javascript"></script>

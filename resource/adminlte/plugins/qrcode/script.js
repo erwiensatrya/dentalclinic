@@ -185,7 +185,7 @@ function load()
 {
 	if(isCanvasSupported() && window.File && window.FileReader)
 	{
-		initCanvas(800,600);
+		initCanvas(320,320);
 		qrcode.callback = read;
 		document.getElementById("mainbody").style.display="inline";
 	}
@@ -243,8 +243,6 @@ function setimg()
     if(stype==2)
         return;
     document.getElementById("outdiv").innerHTML = imghtml;
-    document.getElementById("qrimg").src="images/upload1.jpg";
-    document.getElementById("webcamimg").src="images/webcam2.jpg";
     var qrfile = document.getElementById("qrfile");
     qrfile.addEventListener("dragenter", dragenter, false);  
     qrfile.addEventListener("dragover", dragover, false);  
