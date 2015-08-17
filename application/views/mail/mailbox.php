@@ -2,6 +2,7 @@
 <html>
   <head>
     <meta charset="UTF-8">
+	<link rel="shortcut icon" href="<?php echo base_url(); ?>favicon.ico"/>
     <title><?php echo lang('website_title'); ?> | <?php echo lang('mailbox_title'); ?></title>
     <!-- Tell the browser to be responsive to screen width -->
     <meta content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no" name="viewport">
@@ -29,6 +30,23 @@
         <script src="https://oss.maxcdn.com/html5shiv/3.7.2/html5shiv.min.js"></script>
         <script src="https://oss.maxcdn.com/respond/1.4.2/respond.min.js"></script>
     <![endif]-->
+	
+	<script type="text/javascript">
+	function readMessage(id){
+		$('#read_email').show();
+		//alert(id);
+		//alert($('#'+id+' .mailbox-message').html());
+		$('#read_subject').html($('#'+id+' .mailbox-subject').html());
+		$('#read_from').html($('#'+id+' .mailbox-from').html());
+		$('#read_date').html($('#'+id+' .mailbox-date').html());
+		
+		var decoded = $('<div/>').html($('#'+id+' .mailbox-message').html()).text();
+		//alert(decoded);
+
+		$('#read_message').html(decoded);
+		
+	  }
+	</script>
   </head>
   <body class="skin-blue sidebar-mini">
     <div class="wrapper">
@@ -44,24 +62,26 @@
         <section class="content-header">
           <h1>
             <?php echo lang('mailbox_title'); ?>
-            <small><?php echo $totalemail; ?> messages</small>
+            <small><?php echo $mailboxInfo['total']; ?> messages</small>
           </h1>
           <ol class="breadcrumb">
             <li><a href="#"><i class="fa fa-dashboard"></i> Home</a></li>
             <li class="active"><?php echo lang('mailbox_title'); ?></li>
           </ol>
         </section>
-
+		
 		<?php if(isset($error)){ ?>
-		 <div class="alert alert-danger alert-dismissable">
-			<button type="button" class="close" data-dismiss="alert" aria-hidden="true">×</button>
+		<div class="pad margin no-print">
+          <div class="alert alert-danger alert-dismissable" style="margin-bottom: 0!important;">
+            <button type="button" class="close" data-dismiss="alert" aria-hidden="true">×</button>
 			<h4><i class="icon fa fa-ban"></i> Alert!</h4>
 			<?php echo $error; ?>
-		  </div>
-		<?php } ?>	  
+		</div>
+		</div>
+		<?php } ?>	
 		
         <!-- Main content -->
-        <section class="content">
+        <section class="content">		
           <div class="row">
             <div class="col-md-3">
               <a onclick="$('#mailbox_email').hide();$('#read_email').hide();$('#inbox_menu').removeClass('active');$('#new_email').show();" class="btn btn-primary btn-block margin-bottom">Compose</a>
@@ -74,7 +94,7 @@
                 </div>
                 <div class="box-body no-padding">
                   <ul class="nav nav-pills nav-stacked">
-                    <li id="inbox_menu" class=""><a href="#" onclick="$('#read_email').hide();$('#new_email').hide();$('#mailbox_email').show();$('#inbox_menu').addClass('active');"><i class="fa fa-inbox"></i> Inbox <span class="label label-primary pull-right"><?php echo $totalunread; ?></span></a></li>
+                    <li id="inbox_menu" class=""><a href="#" onclick="$('#read_email').hide();$('#new_email').hide();$('#mailbox_email').show();$('#inbox_menu').addClass('active');"><i class="fa fa-inbox"></i> Inbox <span class="label label-primary pull-right"><?php echo $mailboxInfo['unread']; ?></span></a></li>
                     <li id="sent_menu" class=""><a href="#"><i class="fa fa-envelope-o"></i> Sent</a></li>
                     <li id="draft_menu" class=""><a href="#"><i class="fa fa-file-text-o"></i> Drafts</a></li>
                     <li id="junk_menu" class=""><a href="#"><i class="fa fa-filter"></i> Junk <span class="label label-warning pull-right">65</span></a></li>
@@ -100,7 +120,7 @@
             </div><!-- /.col -->
 			
 			<!-- Mailbox Email -->
-            <div class="col-md-9" id="mailbox_email">
+            <div class="col-md-9" id="mailbox_email" style="<?php if(isset($compose)){ ?>display:none;<?php } ?>">
               <div class="box box-primary">
                 <div class="box-header with-border">
                   <h3 class="box-title">Inbox</h3>
@@ -135,15 +155,18 @@
 					  <?php if(isset($mail)){
 						  foreach ($mail as $idx => $value){
 					  ?>
-                        <tr>
+                        <tr id="mail-<?php echo $idx; ?>">
                           <td><input type="checkbox" /></td>
                           <td class="mailbox-star"><a href="#"><i class="fa fa-star text-yellow"></i></a></td>
-                          <td class="mailbox-name"><a href="read-mail.html"><?php echo $value['from']; ?></a></td>
+                          <td class="mailbox-name"><a href="#" onclick="readMail(<?php echo $value['id']; ?>);" ><?php echo $value['from']; ?></a></td>
                           <td class="mailbox-subject"><?php if(!$value['status']){ echo '<b>'.$value['subject'].'</b>'; }else{ echo $value['subject']; } ?></td>
                           <td class="mailbox-attachment"></td>
                           <td class="mailbox-date"><?php echo $value['udate']; ?></td>
+                          <td class="mailbox-message" style="display:none;"><?php //echo htmlentities($value['message']); ?></td>
+                          <td class="mailbox-attachment" style="display:none;"><pre><?php //print_r($value['attachments']); ?></pre></td>
                         </tr>
-					  <?php }} ?>
+					  <?php }
+					  } ?>
                       </tbody>
                     </table><!-- /.table -->
                   </div><!-- /.mail-box-messages -->
@@ -171,7 +194,7 @@
             </div><!-- /.col -->
 			<!-- End Mailbox Inbox -->
 			
-			<?php echo form_open(uri_string()); ?>
+			<?php echo form_open(uri_string(),array('enctype'=>'multipart/form-data')); ?>
 			<!-- New Email -->
 			<div class="col-md-9" id="new_email" style="<?php if(!isset($compose)){ ?>display:none;<?php } ?>">
               <div class="box box-primary">
@@ -211,17 +234,6 @@
                   </div>
                   <div class="form-group">
                     <textarea id="compose-textarea" class="form-control" style="height: 300px">
-                      <h1><u>Heading Of Message</u></h1>
-                      <h4>Subheading</h4>
-                      <p>But I must explain to you how all this mistaken idea of denouncing pleasure and praising pain was born and I will give you a complete account of the system, and expound the actual teachings of the great explorer of the truth, the master-builder of human happiness. No one rejects, dislikes, or avoids pleasure itself, because it is pleasure, but because those who do not know how to pursue pleasure rationally encounter consequences that are extremely painful. Nor again is there anyone who loves or pursues or desires to obtain pain of itself, because it is pain, but because occasionally circumstances occur in which toil and pain can procure him some great pleasure. To take a trivial example, which of us ever undertakes laborious physical exercise, except to obtain some advantage from it? But who has any right to find fault with a man who chooses to enjoy a pleasure that has no annoying consequences, or one who avoids a pain that produces no resultant pleasure? On the other hand, we denounce with righteous indignation and dislike men who are so beguiled and demoralized by the charms of pleasure of the moment, so blinded by desire, that they cannot foresee</p>
-                      <ul>
-                        <li>List item one</li>
-                        <li>List item two</li>
-                        <li>List item three</li>
-                        <li>List item four</li>
-                      </ul>
-                      <p>Thank you,</p>
-                      <p>John Doe</p>
                     </textarea>
                   </div>
                   <div class="form-group <?php echo (form_error('attachment')) ? 'has-error' : ''; ?>">
@@ -235,20 +247,20 @@
 							?>
 						</label>
 						<?php } ?>
-						
-                    <div class="btn btn-default btn-file">
+										
+					<div class="btn btn-default btn-file">
                       <i class="fa fa-paperclip"></i> Attachment
-                      <input type="file" name="attachment" />
+                      <input type="file" name="attachment[]" multiple="" />
                     </div>
-                    <p class="help-block">Max. 32MB</p>
+                    <p class="help-block">Max. 20MB</p>
+					
                   </div>
                 </div><!-- /.box-body -->
                 <div class="box-footer">
                   <div class="pull-right">
                     <button class="btn btn-default"><i class="fa fa-pencil"></i> Draft</button>
-                    <button type="submit" class="btn btn-primary" name="send_email"><i class="fa fa-envelope-o"></i> Send</button>
+                    <button type="submit" class="btn btn-primary" name="send_email" value="send_email" id="send_email"><i class="fa fa-envelope-o"></i> Send</button>
                   </div>
-                  <button class="btn btn-default"><i class="fa fa-times"></i> Discard</button>
                 </div><!-- /.box-footer -->
               </div><!-- /. box -->
             </div><!-- /.col -->
@@ -256,7 +268,7 @@
 			<?php echo form_close(); ?>
 			
 			<!--Read Message-->
-			<div class="col-md-9" id="read_email">
+			<div class="col-md-9" id="read_email"  style="display:none;">
               <div class="box box-primary">
                 <div class="box-header with-border">
                   <h3 class="box-title">Read Mail</h3>
@@ -267,8 +279,8 @@
                 </div><!-- /.box-header -->
                 <div class="box-body no-padding">
                   <div class="mailbox-read-info">
-                    <h3>Message Subject Is Placed Here</h3>
-                    <h5>From: support@almsaeedstudio.com <span class="mailbox-read-time pull-right">15 Feb. 2015 11:03 PM</span></h5>
+                    <h3 id="read_subject"></h3>
+                    <h5 id="read_from">From: <span class="mailbox-read-time pull-right" id= "read_date"> </span></h5>
                   </div><!-- /.mailbox-read-info -->
                   <div class="mailbox-controls with-border text-center">
                     <div class="btn-group">
@@ -278,16 +290,12 @@
                     </div><!-- /.btn-group -->
                     <button class="btn btn-default btn-sm" data-toggle="tooltip" title="Print"><i class="fa fa-print"></i></button>
                   </div><!-- /.mailbox-controls -->
-                  <div class="mailbox-read-message">
-                    <p>Hello John,</p>
-                    <p>Keffiyeh blog actually fashion axe vegan, irony biodiesel. Cold-pressed hoodie chillwave put a bird on it aesthetic, bitters brunch meggings vegan iPhone. Dreamcatcher vegan scenester mlkshk. Ethical master cleanse Bushwick, occupy Thundercats banjo cliche ennui farm-to-table mlkshk fanny pack gluten-free. Marfa butcher vegan quinoa, bicycle rights disrupt tofu scenester chillwave 3 wolf moon asymmetrical taxidermy pour-over. Quinoa tote bag fashion axe, Godard disrupt migas church-key tofu blog locavore. Thundercats cronut polaroid Neutra tousled, meh food truck selfies narwhal American Apparel.</p>
-                    <p>Raw denim McSweeney's bicycle rights, iPhone trust fund quinoa Neutra VHS kale chips vegan PBR&B literally Thundercats +1. Forage tilde four dollar toast, banjo health goth paleo butcher. Four dollar toast Brooklyn pour-over American Apparel sustainable, lumbersexual listicle gluten-free health goth umami hoodie. Synth Echo Park bicycle rights DIY farm-to-table, retro kogi sriracha dreamcatcher PBR&B flannel hashtag irony Wes Anderson. Lumbersexual Williamsburg Helvetica next level. Cold-pressed slow-carb pop-up normcore Thundercats Portland, cardigan literally meditation lumbersexual crucifix. Wayfarers raw denim paleo Bushwick, keytar Helvetica scenester keffiyeh 8-bit irony mumblecore whatever viral Truffaut.</p>
-                    <p>Post-ironic shabby chic VHS, Marfa keytar flannel lomo try-hard keffiyeh cray. Actually fap fanny pack yr artisan trust fund. High Life dreamcatcher church-key gentrify. Tumblr stumptown four dollar toast vinyl, cold-pressed try-hard blog authentic keffiyeh Helvetica lo-fi tilde Intelligentsia. Lomo locavore salvia bespoke, twee fixie paleo cliche brunch Schlitz blog McSweeney's messenger bag swag slow-carb. Odd Future photo booth pork belly, you probably haven't heard of them actually tofu ennui keffiyeh lo-fi Truffaut health goth. Narwhal sustainable retro disrupt.</p>
-                    <p>Skateboard artisan letterpress before they sold out High Life messenger bag. Bitters chambray leggings listicle, drinking vinegar chillwave synth. Fanny pack hoodie American Apparel twee. American Apparel PBR listicle, salvia aesthetic occupy sustainable Neutra kogi. Organic synth Tumblr viral plaid, shabby chic single-origin coffee Etsy 3 wolf moon slow-carb Schlitz roof party tousled squid vinyl. Readymade next level literally trust fund. Distillery master cleanse migas, Vice sriracha flannel chambray chia cronut.</p>
-                    <p>Thanks,<br>Jane</p>
+                  <div class="mailbox-read-message" id="read_message">		  
+                    
                   </div><!-- /.mailbox-read-message -->
                 </div><!-- /.box-body -->
                 <div class="box-footer">
+				
                   <ul class="mailbox-attachments clearfix">
                     <li>
                       <span class="mailbox-attachment-icon"><i class="fa fa-file-pdf-o"></i></span>
@@ -421,9 +429,23 @@
         //Add text editor
         $("#compose-textarea").wysihtml5();
       });
+	  //Read Email
+	  
+	  function readMail(id){
+		$.getJSON("<?php echo base_url()."mail/readmail/"; ?>"+id, function(data) {
+
+			$('#read_email').show();
+			$('#read_subject').html(data.subject);
+			$('#read_from').html("From: "+data.from);
+			$('#read_date').html(data.udate);
+			
+			var decoded = $('<div/>').html(data.message).text();
+			
+			$('#read_message').html(decoded);
+		});
+	  }
 	  
     </script>
-    <!-- AdminLTE for demo purposes -->
-    <script src="../../dist/js/demo.js" type="text/javascript"></script>
+    
   </body>
 </html>

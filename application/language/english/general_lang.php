@@ -44,6 +44,7 @@ $lang['admin_panel_manage_users'] = 'Manage Users';
 $lang['admin_panel_manage_permissions'] = 'Manage Permissions';
 $lang['admin_panel_manage_roles'] = 'Manage Roles';
 $lang['admin_panel_manage_files'] = 'Manage Files';
+$lang['admin_panel_manage_mailbox'] = 'Manage Mailbox';
 
 /* End of file general_lang.php */
 /* Location: ./application/language/english/general_lang.php */

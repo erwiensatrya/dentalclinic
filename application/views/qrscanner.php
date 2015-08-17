@@ -32,6 +32,14 @@
           </ol>
         </section>
 
+		<div class="pad margin no-print" id="erroralert" style="display:none;">
+          <div class="alert alert-danger alert-dismissable" style="margin-bottom: 0!important;">
+            <button type="button" class="close" data-dismiss="alert" aria-hidden="true">×</button>
+			<h4><i class="icon fa fa-ban"></i> Alert!</h4>
+			<p id="mainbody"></p>
+		</div>
+		</div>
+		
         <!-- Main content -->
         <section class="content">
   	  
@@ -50,6 +58,7 @@
 				</div>
 				<canvas style="width: 320px; height: 320px; " id="qr-canvas" width="320" height="320"></canvas>
 				<div id="result"></div>
+				
 				
 				
                 </div><!-- /.box-body -->
