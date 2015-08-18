@@ -1,68 +1,4 @@
-<!DOCTYPE html>
-<html>
-  <head>
-   <title><?php echo lang('website_title'); ?> | <?php echo lang('file_title'); ?> </title>
-  <?php echo $this->load->view('head'); ?>
-  <!-- Theme style -->
-  <link href="<?php echo base_url().RES_DIR; ?>/adminlte/plugins/cutefilefolder/styles.css" rel="stylesheet" type="text/css" />
-	
-	
-	<link rel="stylesheet" type="text/css" media="screen" href="<?php echo base_url().RES_DIR; ?>/adminlte/plugins/elfinder/css/elfinder.min.css">
-	<script type="text/javascript" src="<?php echo base_url().RES_DIR; ?>/adminlte/plugins/elfinder/js/elfinder.min.js"></script>
-
-	<!-- Mac OS X Finder style for jQuery UI smoothness theme (OPTIONAL) -->
-	<link rel="stylesheet" type="text/css" media="screen" href="<?php echo base_url().RES_DIR; ?>/adminlte/plugins/elfinder/css/theme.css">
-		
-	
-	 
-  </head>
-  <body class="skin-blue sidebar-mini">
-    <div class="wrapper">
-	
-	<?php echo $this->load->view('header'); ?>
-	<!-- Left side column. contains the logo and sidebar -->
-	<?php echo $this->load->view('aside_l'); ?>
-	<!-- /.sidebar -->
-	
-      <!-- Content Wrapper. Contains page content -->
-      <div class="content-wrapper">
-        <!-- Content Header (Page header) -->
-        <section class="content-header">
-          <h1>
-            <?php echo lang('file_title'); ?>
-            <small><?php echo lang('file_management'); ?></small>
-          </h1>
-          <ol class="breadcrumb">
-            <li><a href="#"><i class="fa fa-dashboard"></i> Home</a></li>
-            <li class="active"><?php echo lang('file_title'); ?></li>
-          </ol>
-        </section>
-
-        <!-- Main content -->
-        <section class="content">
-		<div class="filemanager">
-          <?php echo "<pre>"; print_r($scan); echo "</pre>"; ?>
-		  <?php echo base_url().'file/scan/'.$account->id; ?>
-		  <div class="breadcrumbs"></div>
-
-			<ul class="data"></ul>
-
-			<div class="nothingfound">
-				<div class="nofiles"></div>
-				<span>No files here.</span>
-			</div>
-		</div>
-        </section><!-- /.content -->
-      </div><!-- /.content-wrapper -->
-
-      <?php echo $this->load->view('footer'); ?>
-	  
-    </div><!-- ./wrapper -->
-	 <?php echo $this->load->view('footer_js'); ?>
-	 
-	 <script type="text/javascript">
-	 
-	 $(function(){
+$(function(){
 
 	var filemanager = $('.filemanager'),
 		breadcrumbs = $('.breadcrumbs'),
@@ -70,8 +6,8 @@
 
 	// Start by fetching the file data from scan.php with an AJAX request
 
-	$.get('<?php echo base_url();?>file/scan/<?php echo $account->id; ?>', function(data) {
-		console.log(data);
+	$.get('file/scan/', function(data) {
+
 		var response = [data],
 			currentPath = '',
 			breadcrumbsUrls = [];
@@ -459,9 +395,3 @@
 
 	});
 });
-
-
-	 </script>
-	 
-  </body>
-</html>

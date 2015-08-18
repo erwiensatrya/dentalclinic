@@ -45,47 +45,50 @@ class Mail extends CI_Controller {
 			*/
 		
 			$mailbox_settings = $this->mailbox_model->get();
-		
-			$dns 		= "{".$mailbox_settings->mail_server."}".$mailbox_settings->mailbox;
-			$email 		= $mailbox_settings->email;
-			$password 	= $mailbox_settings->password;
-
-			if ($inbox  = imap_open($dns,$email,$password)){
 			
-			$emails 			 = imap_search($inbox,'ALL');
-			$this->data['mailboxInfo'] = $this->getCurrentMailboxInfo($inbox,$dns);
+			if(!empty($mailbox_settings)){
+				
+				$dns 		= "{".$mailbox_settings->mail_server."}".$mailbox_settings->mailbox;
+				$email 		= $mailbox_settings->email;
+				$password 	= $mailbox_settings->password;
+
+				if ($inbox  = imap_open($dns,$email,$password)){
+				
+				$emails 			 = imap_search($inbox,'ALL');
+				$this->data['mailboxInfo'] = $this->getCurrentMailboxInfo($inbox,$dns);
+									
+					if ($emails) {
+						rsort($emails);
+						$counter = 0;
 								
-				if ($emails) {
-					rsort($emails);
-					$counter = 0;
-							
-					foreach($emails as $email_number) {
-						$mail_row = array();
+						foreach($emails as $email_number) {
+							$mail_row = array();
+												
+							$temp 						= $this->getMessage($inbox,$email_number);
+							$mail_row['id']				= $temp['id'];
+							$mail_row['status']			= $temp['answered'];
+							$mail_row['subject']		= $temp['subject'];
+							$mail_row['from']   		= $temp['from'];
+							$mail_row['udate']   		= $this->time_elapsed_string($temp['udate']);
+							//$mail_row['message']   		= $temp['body'];
+							//$mail_row['attachments']   	= $temp['attachments'];
+							$this->data['mail'][] 		= $mail_row;
+							$counter++;
+							if($counter >= 5 ){ break; };
+						}
 											
-						$temp 						= $this->getMessage($inbox,$email_number);
-						$mail_row['id']				= $temp['id'];
-						$mail_row['status']			= $temp['answered'];
-						$mail_row['subject']		= $temp['subject'];
-						$mail_row['from']   		= $temp['from'];
-						$mail_row['udate']   		= $this->time_elapsed_string($temp['udate']);
-						//$mail_row['message']   		= $temp['body'];
-						//$mail_row['attachments']   	= $temp['attachments'];
-						$this->data['mail'][] 		= $mail_row;
-						$counter++;
-						if($counter >= 5 ){ break; };
+						imap_close($inbox);
+						
+					} else {
+						$this->data['error'] = "Failed reading messages!";
 					}
-										
-					imap_close($inbox);
-					
-				} else {
-					$this->data['error'] = "Failed reading messages!";
+						
+				} else { 
+					exit; $this->data['error'] = "Can't connect: " . imap_last_error() ."\n"." FAIL!\n";  
 				}
-					
-			} else { 
-				exit; $this->data['error'] = "Can't connect: " . imap_last_error() ."\n"." FAIL!\n";  
-			}
-		
-		}
+			
+			}else{ $this->data['error'] = "Please do the Mailbox Configuration"; }
+		}else{ $this->data['error'] = "No internet connection"; }
 		
 		$this->form_validation->set_rules(
 			array(

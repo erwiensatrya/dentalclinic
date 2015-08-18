@@ -10,7 +10,8 @@ class Mailbox_model extends CI_Model {
 	 */
 	function get()
 	{
-		return $this->db->get('mailbox_configuration')->result()[0];
+		$result =  $this->db->get('mailbox_configuration')->result();
+		if(!empty($result)) return $result[0];
 	}
 
 	/**
