@@ -31,95 +31,88 @@ class File extends CI_Controller {
 			$this->data['account'] = $this->account_model->get_by_id($this->session->userdata('account_id'));
 			$this->data['account_details'] = $this->account_details_model->get_by_account_id($this->session->userdata('account_id'));
 		}
-
+	  
 		//$this->data['scan'] = $this->scan($this->session->userdata('account_id'),FALSE);
 		$this->data['dir'] = RES_DIR.'/user/'.$this->session->userdata('account_id');
 		
 		//$this->elfinder_init($this->data['dir']);
-		$this->load->view('file_', isset($this->data) ? $this->data : NULL);
+		$this->load->view('file', isset($this->data) ? $this->data : NULL);
 	}
 	
-	function scan($dir,$action=TRUE){
-		$dir =  RES_DIR.'/user/'.$dir;
-		$files = array();
-
-		// Is there actually such a folder/file?
-
-		if(file_exists($dir)){
-		
-			foreach(scandir($dir) as $f) {
-			
-				if(!$f || $f[0] == '.') {
-					continue; // Ignore hidden files
-				}
-
-				if(is_dir($dir . '/' . $f)) {
-
-					// The path is a folder
-
-					$files[] = array(
-						"name" => $f,
-						"type" => "folder",
-						"path" => $dir . '/' . $f,
-						"items" => scan($dir . '/' . $f) // Recursively get the contents of the folder
-					);
-				}
-				
-				else {
-
-					// It is a file
-
-					$files[] = array(
-						"name" => $f,
-						"type" => "file",
-						"path" => $dir . '/' . $f,
-						"size" => filesize($dir . '/' . $f) // Gets the size of this file
-					);
-				}
-			}
-		
-		}else{
-			$this->data['error'] =  "file/folder ".$dir." not found";
-		}
-
-		if($action){
-			
-			header('Content-type: application/json');
-
-			echo json_encode(array(
-				"name" => "files",
-				"type" => "folder",
-				"path" => $dir,
-				"items" => $files
-			));
-		}else{
-			return $files;
-		}
-	}
 	
 	function elfinder_init($path=null)
 	{
-	  if($path = 1){
+	  if($path === 1){
 		$path = RES_DIR.'/user/';
+		
+		$opts = array(
+			//'debug' => true, 
+			'roots' => array(
+				  array( 
+					'driver' => 'LocalFileSystem', 
+					'path'   => $path, 
+					'URL'    => base_url().$path,
+					'accessControl' => 'access',
+					'attributes' => array(
+						array(
+							'pattern' => '!^/index.html!',
+							'hidden' => true
+						),array(
+							'pattern' => '!^/.tmb!',
+							'hidden' => true
+						),array(
+							'pattern' => '!^/.quarantine!',
+							'hidden' => true
+						)
+					)
+					
+				  ) 
+			)
+		  );
+	  
 	  }else{
-		$path = RES_DIR.'/user/'.$this->session->userdata('account_id');
+		$this->load->model(array('account/account_details_model'));
+		$fullname = $this->account_details_model->get_by_account_id($path)->fullname;
+		$path = RES_DIR.'/user/'.$path.'/';
+		
+		$opts = array(
+		//'debug' => true, 
+			'roots' => array(
+				  array( 
+					'driver' => 'LocalFileSystem', 
+					'path'   => $path, 
+					'URL'    => base_url().$path,
+					'accessControl' => 'access',
+					'alias'  => $fullname,
+					'attributes' => array(
+						array(
+							'pattern' => '!^/index.html!',
+							'hidden' => true
+						),array(
+							'pattern' => '!^/.tmb!',
+							'hidden' => true
+						),array(
+							'pattern' => '!^/.quarantine!',
+							'hidden' => true
+						)
+					)
+					
+				  ) 
+			)
+		  );
 	  }
-	  $this->load->helper('path');
-	  $opts = array(
-		// 'debug' => true, 
-		'roots' => array(
-		  array( 
-			'driver' => 'LocalFileSystem', 
-			'path'   => set_realpath($path), 
-			'URL'    => site_url($path) . '/'
-			//'path'   => './myfile', 
-			//'URL'    => base_url('myfile') . '/'
-			// more elFinder options here
-		  ) 
-		)
-	  );
+	 
+	  
 	  $this->load->library('elfinder_lib', $opts);
 	}
+	
+	function access($attr, $path, $data, $volume) {
+		return strpos(basename($path), '.') === 0       // if file/folder begins with '.' (dot)
+		? !($attr == 'read' || $attr == 'write')    // set read+write to false, other (locked+hidden) set to true
+		:  null;                                    // else elFinder decide it itself
+    }
+
+  
 }
 
 

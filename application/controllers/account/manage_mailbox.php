@@ -34,7 +34,7 @@ class Manage_mailbox extends CI_Controller {
     }
 
     // Redirect unauthorized users to account profile page
-    if ( ! $this->authorization->is_permitted('retrieve_mailbox'))
+    if ( ! $this->authorization->is_permitted('manage_mailbox'))
     {
       redirect('account/account_profile');
     }
@@ -92,6 +92,47 @@ class Manage_mailbox extends CI_Controller {
     // Load manage roles view
     $this->load->view('account/manage_mailbox', $data);
   }
+  
+  /**
+   * Test connection to the IMAP server.
+   *
+   * @return True / False
+   *
+   * @throws Exception when IMAP can't reconnect.
+   */
+  function testConnection() {
+	$url = parse_url($_SERVER['REQUEST_URI']);
+	
+	if (isset($url['query'])){
+		parse_str($url['query'], $this->get);
+	}
+	
+	if($this->is_connected()){	
+		if ($inbox  = imap_open("{".urldecode(explode(';',$this->get['query'])[0])."}".urldecode(explode(';',$this->get['query'])[1]), urldecode(explode(';',$this->get['query'])[2]), urldecode(explode(';',$this->get['query'])[3]))){
+		  $data['status'] = "Connection Succeed";
+		  $data['error'] = "";
+		}else{
+		  $data['status'] = "Connection Failure";
+		  $data['error'] = imap_last_error();
+		}
+	}else{
+		$data['status'] = "Connection Failure";
+		$data['error'] = "No internet connection";
+	}
+	echo json_encode($data, JSON_PRETTY_PRINT);
+  }
+  
+	function is_connected(){
+		$connected = @fsockopen("www.google.com", 80); 
+		//website, port  (try 80 or 443)
+		if ($connected){
+			$is_conn = true; //action when connected
+			fclose($connected);
+		}else{
+			$is_conn = false; //action in connection failure
+		}
+		return $is_conn;
+	}
   
 }
 

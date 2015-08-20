@@ -23,7 +23,7 @@
               <li class="dropdown messages-menu">
                 <a href="#" class="dropdown-toggle" data-toggle="dropdown">
                   <i class="fa fa-envelope-o"></i>
-				  <?php if(isset($mailboxInfo['unread'])){ echo '<span class="label label-danger">'.$mailboxInfo['unread'].'</span>'; } ?>
+				  <?php if((isset($mailboxInfo['unread'])) && ($mailboxInfo['unread']>0)){ echo '<span class="label label-danger">'.$mailboxInfo['unread'].'</span>'; } ?>
                 </a>
 				<?php if((isset($mailboxInfo['unread']))&&($mailboxInfo['unread']>0)){ ?>
                 <ul class="dropdown-menu">

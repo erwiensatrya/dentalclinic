@@ -152,9 +152,15 @@
 					<div class="form-group">
 					<label class="col-sm-2 control-label"></label>
                       <div class="col-sm-10">
-						<a class="btn btn-default">
-							<i class="fa fa-exchange"></i>&nbsp;&nbsp;&nbsp;<?php echo lang('mailbox_test_connection'); ?>
+						<a class="btn btn-default" onclick="test_connection()">
+							<i style="display:none;" id="test_connection_btn_load" class="fa fa-refresh fa-spin"></i><i id="test_connection_btn" class="fa fa-exchange" ></i>&nbsp;&nbsp;&nbsp;<?php echo lang('mailbox_test_connection'); ?>
+						
 						</a>
+						
+						<div class="overlay">
+						  
+						</div>
+				
                       </div>
                     </div>
 													 			   
@@ -179,6 +185,36 @@
     </div><!-- ./wrapper -->
 
     <?php echo $this->load->view('footer_js'); ?>
-	
+	<script type="text/javascript">
+		
+		function test_connection(){
+			var decoded = encodeURIComponent($('#mailbox_mail_server').val());
+			decoded = decoded+";"+encodeURIComponent($('#mailbox_mailbox').val());
+			decoded = decoded+";"+encodeURIComponent($('#mailbox_email').val());
+			decoded = decoded+";"+encodeURIComponent($('#mailbox_password').val());
+			
+			$('#test_connection_btn').hide();
+			$('#test_connection_btn_load').show();
+			
+			$.getJSON("<?php echo base_url()."account/manage_mailbox/testConnection/?query="; ?>"+decoded,function(data) {
+				if(data.error !== ''){
+					alert(data.status+"\n"+data.error);
+				}else{
+					alert(data.status);
+				}
+				$('#test_connection_btn').show();
+				$('#test_connection_btn_load').hide();
+			}).fail(function(jqXHR, status, error){
+				if(status == 'parseerror'){
+					//not valid json
+					alert('Connection Error, Invalid json');
+				} else {
+					alert('Connection Error');
+				}
+				$('#test_connection_btn').show();
+				$('#test_connection_btn_load').hide();
+			});
+		}
+	</script>
   </body>
 </html>

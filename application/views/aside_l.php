@@ -63,7 +63,7 @@
 				<li class="<?php echo (isset($managepermissions))? 'active':''?>"><a href="<?php echo base_url(); ?>account/manage_permissions"><i class="fa fa-circle-o"></i>  <?php echo lang('admin_panel_manage_permissions'); ?></a></li>
 				<?php endif; ?>
 								
-				<?php if ($this->authorization->is_permitted('retrieve_mailbox')) : ?>
+				<?php if ($this->authorization->is_permitted('manage_mailbox')) : ?>
 				<li class="<?php echo (isset($managemailbox))? 'active':''?>"><a href="<?php echo base_url(); ?>account/manage_mailbox"><i class="fa fa-circle-o"></i>  <?php echo lang('admin_panel_manage_mailbox'); ?></a></li>
 				<?php endif; ?>
 			 </ul>
@@ -88,7 +88,7 @@
 			<li class="<?php echo (isset($mail))? 'active':''?>">
               <a href="<?php echo base_url(); ?>mail">
                 <i class="fa fa-envelope"></i> <span>Mailbox</span>
-                <?php if(isset($mailboxInfo['unread'])){ echo '<small class="label pull-right bg-red">'.$mailboxInfo['unread'].'</small>'; } ?>
+                <?php if((isset($mailboxInfo['unread'])) && ($mailboxInfo['unread']>0)){ echo '<small class="label pull-right bg-red">'.$mailboxInfo['unread'].'</small>'; } ?>
               </a>
             </li>
           </ul>

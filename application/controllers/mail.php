@@ -13,6 +13,7 @@ class Mail extends CI_Controller {
 		$this->load->language(array('general', 'account/account_profile','mail'));
 		
 		$data = array();
+		$address; $email; $password;
 		
 	}
 
@@ -48,14 +49,14 @@ class Mail extends CI_Controller {
 			
 			if(!empty($mailbox_settings)){
 				
-				$dns 		= "{".$mailbox_settings->mail_server."}".$mailbox_settings->mailbox;
-				$email 		= $mailbox_settings->email;
-				$password 	= $mailbox_settings->password;
+				$this->address 	= "{".$mailbox_settings->mail_server."}".$mailbox_settings->mailbox;
+				$this->email 	= $mailbox_settings->email;
+				$this->password = $mailbox_settings->password;
 
-				if ($inbox  = imap_open($dns,$email,$password)){
+				if ($inbox  = imap_open($this->address,$this->email,$this->password)){
 				
-				$emails 			 = imap_search($inbox,'ALL');
-				$this->data['mailboxInfo'] = $this->getCurrentMailboxInfo($inbox,$dns);
+				$emails 			 		= imap_search($inbox,'ALL');
+				$this->data['mailboxInfo'] 	= $this->getCurrentMailboxInfo($inbox,$this->address);
 									
 					if ($emails) {
 						rsort($emails);

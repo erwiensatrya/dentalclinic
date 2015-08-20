@@ -7,11 +7,19 @@ include_once dirname(__FILE__).DIRECTORY_SEPARATOR.'elfinder/elFinderVolumeLocal
 
 class Elfinder_lib 
 {
+	
   public function __construct($opts) 
   {
+	  
     $connector = new elFinderConnector(new elFinder($opts));
     $connector->run();
   }
+  
+  public function access($attr, $path, $data, $volume) {
+		return strpos(basename($path), '.') === 0       // if file/folder begins with '.' (dot)
+		? !($attr == 'read' || $attr == 'write')    // set read+write to false, other (locked+hidden) set to true
+		:  null;                                    // else elFinder decide it itself
+    }
 }
 
 ?>

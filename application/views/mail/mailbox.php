@@ -94,7 +94,7 @@
                 </div>
                 <div class="box-body no-padding">
                   <ul class="nav nav-pills nav-stacked">
-                    <li id="inbox_menu" class=""><a href="#" onclick="$('#read_email').hide();$('#new_email').hide();$('#mailbox_email').show();$('#inbox_menu').addClass('active');"><i class="fa fa-inbox"></i> Inbox <span class="label label-primary pull-right"><?php echo (isset($mailboxInfo['unread'])) ? $mailboxInfo['unread'] :""; ?></span></a></li>
+                    <li id="inbox_menu" class=""><a href="#" onclick="$('#read_email').hide();$('#new_email').hide();$('#mailbox_email').show();$('#inbox_menu').addClass('active');"><i class="fa fa-inbox"></i> Inbox <span class="label label-primary pull-right"><?php echo ((isset($mailboxInfo['unread'])) && ($mailboxInfo['unread']>0)) ? $mailboxInfo['unread'] :""; ?></span></a></li>
                     <li id="sent_menu" class=""><a href="#"><i class="fa fa-envelope-o"></i> Sent</a></li>
                     <li id="draft_menu" class=""><a href="#"><i class="fa fa-file-text-o"></i> Drafts</a></li>
                     <li id="junk_menu" class=""><a href="#"><i class="fa fa-filter"></i> Junk <span class="label label-warning pull-right">65</span></a></li>
