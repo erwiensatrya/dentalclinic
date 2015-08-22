@@ -46,7 +46,7 @@
 		<script type="text/javascript" charset="utf-8">
 			$().ready(function() {
 				var elf = $('#elfinder').elfinder({
-					// lang: 'ru',             // language (OPTIONAL)
+					height:'500 px',
 					url : '<?php echo base_url().'file/elfinder_init/'.$account->id; ?>' // connector URL (REQUIRED)
 				}).elfinder('instance');            
 			});

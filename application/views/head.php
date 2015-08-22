@@ -8,6 +8,8 @@
     <link href="<?php echo base_url().RES_DIR; ?>/adminlte/dist/css/font-awesome.min.css" rel="stylesheet" type="text/css" />
     <!-- Ionicons -->
     <link href="<?php echo base_url().RES_DIR; ?>/adminlte/dist/css/ionicons.min.css" rel="stylesheet" type="text/css" />
+    <!-- flaticon -->
+    <link href="<?php echo base_url().RES_DIR; ?>/adminlte/dist/fonts/flaticon/flaticon.css" rel="stylesheet" type="text/css" />
     <!-- jvectormap -->
     <link href="<?php echo base_url().RES_DIR; ?>/adminlte/plugins/jvectormap/jquery-jvectormap-1.2.2.css" rel="stylesheet" type="text/css" />
     <!-- Theme style -->

@@ -12,7 +12,7 @@
         <nav class="navbar navbar-static-top">
           <div class="container">
             <div class="navbar-header">
-              <a href="#" class="navbar-brand"><b><?php echo lang('website_title'); ?></b></a>
+              <a href="#" class="navbar-brand"><i class="flaticon-tooth19"></i> <b><?php echo lang('website_title'); ?></b></a>
               <button type="button" class="navbar-toggle collapsed" data-toggle="collapse" data-target="#navbar-collapse">
                 <i class="fa fa-bars"></i>
               </button>
@@ -200,7 +200,7 @@
       </header>
 	  
       <!-- Full Width Column -->
-      <div class="content-wrapper">
+      <div class="content-wrapper" style="background-image:url('<?php echo base_url().RES_DIR.'/img/2.jpg'; ?>');">
         <div class="container">
           <!-- Content Header (Page header) -->
           <section class="content">
@@ -216,19 +216,19 @@
 			</ol>
 			<div class="carousel-inner">
 			  <div class="item active">
-				<img src="http://placehold.it/900x500/39CCCC/ffffff&text=I+Love+Bootstrap" alt="First slide">
+				<img width="900" height="500" src="<?php echo base_url().RES_DIR.'/img/colgate-toothpaste-commercial-lollypop.jpg'; ?>" alt="lolypop">
 				<div class="carousel-caption">
 				  First Slide
 				</div>
 			  </div>
 			  <div class="item">
-				<img src="http://placehold.it/900x500/3c8dbc/ffffff&text=I+Love+Bootstrap" alt="Second slide">
+				<img height="500" src="<?php echo base_url().RES_DIR.'/img/colgate-toothpaste-commercial-cottoncandy.jpg'; ?>" alt="cotton candy">
 				<div class="carousel-caption">
 				  Second Slide
 				</div>
 			  </div>
 			  <div class="item">
-				<img src="http://placehold.it/900x500/f39c12/ffffff&text=I+Love+Bootstrap" alt="Third slide">
+				<img height="500" src="<?php echo base_url().RES_DIR.'/img/colgate-toothpaste-commercial-icecream.jpg'; ?>" alt="ice cream">
 				<div class="carousel-caption">
 				  Third Slide
 				</div>
@@ -243,15 +243,10 @@
 		  </div>
           </section>    
           <!-- Main content -->
-          <section class="content">
-            <div class="box box-default">
-              <div class="box-header with-border">
-                <h3 class="box-title">Blank Box</h3>
-              </div>
-              <div class="box-body">
-                The great content goes here
-              </div><!-- /.box-body -->
-            </div><!-- /.box -->
+          <section class="content text-center">
+            <div class="alert alert-success alert-dismissable">
+			  Dont forget to brush your teeth and visit us every six month<br/>
+               Smile and the world will smile with you!
           </section><!-- /.content -->  
 		  
         </div><!-- /.container -->

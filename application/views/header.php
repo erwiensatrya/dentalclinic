@@ -3,9 +3,9 @@
         <!-- Logo -->
         <a href="<?php echo base_url(); ?>" class="logo">
           <!-- mini logo for sidebar mini 50x50 pixels -->
-          <span class="logo-mini"><b>D</b>CL</span>
+          <span class="logo-mini"><i class="flaticon-tooth19"></i>D</span>
           <!-- logo for regular state and mobile devices -->
-          <span class="logo-lg"><b><?php echo lang('website_title'); ?></b></span>
+          <span class="logo-lg"><i class="flaticon-tooth19"></i>  <b><?php echo lang('website_title'); ?></b></span>
         </a>
 
         <!-- Header Navbar: style can be found in header.less -->

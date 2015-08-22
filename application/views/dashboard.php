@@ -110,7 +110,7 @@
                   <h3 class="text-center"><b>Dental Clinic</b> member card</h3>
                 </div><!-- /.box-header -->
                 <div class="box-body text-center">
-                   <img src="http://localhost/dentalclinic/resource/user/<?php echo $account->id ?>/qr-<?php echo $account->id ?>.png" title="User's QRCode" alt="User's QRCode" >
+                   <img width= "200" src="http://localhost/dentalclinic/resource/user/<?php echo $account->id ?>/qr-<?php echo $account->id ?>.png" title="User's QRCode" alt="User's QRCode" >
 				   <h3>#1dfs9834hjvsd72</h3>
 				   <hr/>
 				   <?php echo $account->email; ?>

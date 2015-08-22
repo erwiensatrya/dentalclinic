@@ -23,7 +23,7 @@ class File extends CI_Controller {
 		// Redirect unauthenticated users to signin page
 		if ( ! $this->authentication->is_signed_in())
 		{
-			redirect('account/sign_in/?continue='.urlencode(base_url().'dashboard'));
+			redirect('account/sign_in/?continue='.urlencode(base_url().'file'));
 		}
 
 		if ($this->authentication->is_signed_in())
@@ -42,7 +42,7 @@ class File extends CI_Controller {
 	
 	function elfinder_init($path=null)
 	{
-	  if($path === 1){
+	  if($path == 1){
 		$path = RES_DIR.'/user/';
 		
 		$opts = array(
@@ -53,6 +53,9 @@ class File extends CI_Controller {
 					'path'   => $path, 
 					'URL'    => base_url().$path,
 					'accessControl' => 'access',
+					'quarantine'=> base_url().RES_DIR.'/user/.quarantine',
+					'tmbPath'=> RES_DIR.'/user/.tmb',
+					'tmbURL'=> base_url().RES_DIR.'/user/.tmb',
 					'attributes' => array(
 						array(
 							'pattern' => '!^/index.html!',
@@ -84,15 +87,12 @@ class File extends CI_Controller {
 					'URL'    => base_url().$path,
 					'accessControl' => 'access',
 					'alias'  => $fullname,
+					'quarantine'=> base_url().RES_DIR.'/user/.quarantine',
+					'tmbPath'=> RES_DIR.'/user/.tmb',
+					'tmbURL'=> base_url().RES_DIR.'/user/.tmb',
 					'attributes' => array(
 						array(
 							'pattern' => '!^/index.html!',
-							'hidden' => true
-						),array(
-							'pattern' => '!^/.tmb!',
-							'hidden' => true
-						),array(
-							'pattern' => '!^/.quarantine!',
 							'hidden' => true
 						)
 					)
