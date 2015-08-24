@@ -103,41 +103,7 @@
                       <li class="footer"><a href="#">View all</a></li>
                     </ul>
                   </li>
-                  <!-- Tasks Menu -->
-                  <li class="dropdown tasks-menu">
-                    <!-- Menu Toggle Button -->
-                    <a href="#" class="dropdown-toggle" data-toggle="dropdown">
-                      <i class="fa fa-flag-o"></i>
-                      <span class="label label-danger">9</span>
-                    </a>
-                    <ul class="dropdown-menu">
-                      <li class="header">You have 9 tasks</li>
-                      <li>
-                        <!-- Inner menu: contains the tasks -->
-                        <ul class="menu">
-                          <li><!-- Task item -->
-                            <a href="#">
-                              <!-- Task title and progress text -->
-                              <h3>
-                                Design some buttons
-                                <small class="pull-right">20%</small>
-                              </h3>
-                              <!-- The progress bar -->
-                              <div class="progress xs">
-                                <!-- Change the css width attribute to simulate progress -->
-                                <div class="progress-bar progress-bar-aqua" style="width: 20%" role="progressbar" aria-valuenow="20" aria-valuemin="0" aria-valuemax="100">
-                                  <span class="sr-only">20% Complete</span>
-                                </div>
-                              </div>
-                            </a>
-                          </li><!-- end task item -->
-                        </ul>
-                      </li>
-                      <li class="footer">
-                        <a href="#">View all tasks</a>
-                      </li>
-                    </ul>
-                  </li>
+                  
                   <!-- User Account Menu -->
                   <li class="dropdown user user-menu">
                     <!-- Menu Toggle Button -->
@@ -157,25 +123,13 @@
                       <small>Member since <?php echo ($account->createdon)? date_parse($account->createdon)['year']:"";  ?></small>
                     </p>
                   </li>
-                      <!-- Menu Body -->
-                      <li class="user-body">
-                        <div class="col-xs-4 text-center">
-                          <a href="#">Followers</a>
-                        </div>
-                        <div class="col-xs-4 text-center">
-                          <a href="#">Sales</a>
-                        </div>
-                        <div class="col-xs-4 text-center">
-                          <a href="#">Friends</a>
-                        </div>
-                      </li>
                       <!-- Menu Footer-->
                      <li class="user-footer">
                     <div class="pull-left">
-                      <?php echo anchor('dashboard', lang('website_my_profile'),array('class' => 'btn btn-default btn-flat')); ?>
+                      <?php echo anchor(base_url().'dashboard', lang('website_my_profile'),array('class' => 'btn btn-default btn-flat')); ?>
                     </div>
                     <div class="pull-right">
-					  <?php echo anchor('account/sign_out', lang('website_sign_out'),array('class' => 'btn btn-default btn-flat')); ?>
+					  <?php echo anchor(base_url().'account/sign_out', lang('website_sign_out'),array('class' => 'btn btn-default btn-flat')); ?>
                     </div>
                   </li>
                     </ul>
@@ -204,8 +158,7 @@
         <div class="container">
           <!-- Content Header (Page header) -->
           <section class="content">
-		 
-		  
+		
 		  <!-- START CAROUSEL-->
                     
 		  <div id="carousel-example-generic" class="carousel slide" data-ride="carousel" style="width:900px;margin:auto;">
@@ -243,15 +196,110 @@
 		  </div>
           </section>    
           <!-- Main content -->
-          <section class="content text-center">
-            <div class="alert alert-success alert-dismissable">
-			  Dont forget to brush your teeth and visit us every six month<br/>
-               Smile and the world will smile with you!
-          </section><!-- /.content -->  
-		  
+        
+			<section class="col-lg-7 connectedSortable ui-sortable ">
+			<div class="col-xs-12">
+              <div class="info-box bg-aqua">
+                <span class="info-box-icon"  style="font-size:50px;"><i class="flaticon-dentist13" ></i></span>
+                <div class="info-box-content">
+                  <span class="info-box-text">Treatment</span>
+					Bridges,
+					Bruxism Prevention Therapy,
+					Child & Family Dentistry, 
+					Cosmetic Smile Makeovers,
+					Dentures and Partial Dentures,
+					Extractions, 
+					Full Mouth Rehabilitation
+                </div><!-- /.info-box-content -->
+              </div><!-- /.info-box -->
+            </div>
+			
+			<div class="col-xs-12">
+              <div class="info-box bg-red">
+                <span class="info-box-icon" style="font-size:50px;"><i class="flaticon-female205"></i></span>
+                <div class="info-box-content">
+                  <span class="info-box-text">Cosmetics</span>
+                    Power Whitening w/Zoom Advance, 
+					Prosthodontic Procedures, 
+					Root Canals, 
+					Soft Tissue Management, 
+					TMJ Treatment,
+					Treatment of Occlusal Disorders, 
+					Veneers
+                </div><!-- /.info-box-content -->
+              </div><!-- /.info-box -->
+            </div>
+			
+			<div class="col-xs-12">
+              <div class="info-box bg-yellow">
+                <span class="info-box-icon" style="font-size:50px;"><i class="flaticon-dentist16"></i></span>
+                <div class="info-box-content">
+                  <span class="info-box-text">Treatment</span>
+                    Implant Supported Dentures,
+					Inlays/Onlays,
+					Nitrous Oxide,
+					Oral and Facial Cancer Screening,
+					Oral Sedation,
+					Mini Implants for Denture Retention,
+					Periodontal Therapy
+                </div><!-- /.info-box-content -->
+              </div><!-- /.info-box -->
+            </div>
+			</section>
+			
+			  
+			<section class="col-lg-5 connectedSortable ui-sortable">
+
+
+            </section>
+				  
         </div><!-- /.container -->
       </div><!-- /.content-wrapper -->
-     <?php echo $this->load->view('footer'); ?>
+	  
+	  
+	  <div class="container-wrapper"  style="background:#fff;">
+	  <div class="container">
+	  <div class="content">
+	  		
+			<section class="col-lg-7">
+				  <dl class="dl-horizontal">
+					<dt>Address</dt>
+					<dd>Jln Gatot Subroto</dd>
+					<dd>Blok X - 34/12</dd>
+					<dd>Bandung, Indonesia</dd>
+					<dd>3865</dd>
+					<dt>Working Hour</dt>
+					<dd>Monday-Saturday 09:00 - 17:00</dd>
+					<dt>Contact</dt>
+					<dd>+62 22 869364397<br/>+62 22 8693643342</dd>
+				   </dl>
+				   <blockquote class="pull-right">
+                    <p>Smile, and the world will smile with you!</p>
+                    <small>Dental Care <cite title="Source Title">Dental Care</cite></small>
+                  </blockquote>
+				  
+			</section>
+			<section class="col-lg-5">
+			<!-- Map box -->
+			
+			 <iframe class="col-xs-12" src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d3966.341659980366!2d106.80176730000001!3d-6.218596999999995!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x2e69f14d30079f01%3A0x2e74f2341fff266d!2sGelora+Bung+Karno+Main+Stadium!5e0!3m2!1sen!2sid!4v1440262921796" height="230" frameborder="0" style="border:0" allowfullscreen></iframe>
+			
+			  <!-- /.box -->
+			</section>
+		</div><!-- /.content -->
+		</div><!-- /.container -->
+      </div><!-- /.content-wrapper -->
+		
+     <?php //echo $this->load->view('footer'); ?>
+	 
+	 
+	  <footer class="main-footer">
+		  <div class="pull-right hidden-xs">
+			<b><?php echo lang('website_version'); ?> | <small><?php echo sprintf(lang('website_page_rendered_in_x_seconds'), $this->benchmark->elapsed_time()); ?></small> </b>
+		  </div>
+	  <strong>Copyright &copy; <?php echo date('Y'); ?> <?php echo lang('website_title'); ?></strong> All rights reserved. 
+	  </footer>
+  
     </div><!-- ./wrapper -->
 
     <!-- jQuery 2.1.4 -->

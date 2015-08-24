@@ -21,7 +21,7 @@ var imghtml='<div id="qrfile"><canvas id="out-canvas" width="320" height="320"><
 	'</div>'+
 '</div>';
 
-var vidhtml = '<video id="v" autoplay></video>';
+var vidhtml = '<video id="v" autoplay style="width:320; height:320px; border:solid;"></video>';
 
 function dragenter(e) {
   e.stopPropagation();
@@ -193,7 +193,7 @@ function load()
 {
 	if(isCanvasSupported() && window.File && window.FileReader)
 	{
-		initCanvas(320,320);
+		initCanvas(800,600);
 		qrcode.callback = read;
 		//document.getElementById("mainbody").style.display="inline";
 	}

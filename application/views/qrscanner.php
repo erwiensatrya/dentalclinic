@@ -53,10 +53,10 @@
 				<span class="btn btn-app hidden" id="qrimg" onclick="setimg()"><i class="fa fa-image"></i> scan from image </span>
                 </div><!-- /.box-header -->
                 <div class="box-body text-center">
-				<div id="outdiv" style="display:none;">
+				<div id="outdiv">
 				<p class="helptext2">select webcam or image scanning</p>
 				</div>
-				<canvas style="width: 320px; height: 320px; " id="qr-canvas" width="320" height="320"></canvas>
+				<canvas id="qr-canvas" style="width: 800px; height: 600px; display:none;" width="800" height="600"></canvas>
 				<div id="result"></div>
 				
 				
@@ -70,8 +70,11 @@
       </div><!-- /.content-wrapper -->
 
       <?php echo $this->load->view('footer'); ?>
-	  
+	 
     </div><!-- ./wrapper -->
     <?php echo $this->load->view('footer_js'); ?>
+	 <script type="text/javascript">
+		$(document).ready(function() { setwebcam(); });
+	  </script>
   </body>
 </html>

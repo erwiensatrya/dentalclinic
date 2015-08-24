@@ -8,11 +8,11 @@
 	font-weight: normal;
 	font-style: normal;
 }
+
 [class^="flaticon-"]:before, [class*=" flaticon-"]:before,
 [class^="flaticon-"]:after, [class*=" flaticon-"]:after {   
 	font-family: Flaticon;
-        font-size: 15px;
-font-style: normal;
+	font-style: normal;
 
 }.flaticon-anesthesia:before {
 	content: "\e000";

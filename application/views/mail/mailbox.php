@@ -31,22 +31,6 @@
         <script src="https://oss.maxcdn.com/respond/1.4.2/respond.min.js"></script>
     <![endif]-->
 	
-	<script type="text/javascript">
-	function readMessage(id){
-		$('#read_email').show();
-		//alert(id);
-		//alert($('#'+id+' .mailbox-message').html());
-		$('#read_subject').html($('#'+id+' .mailbox-subject').html());
-		$('#read_from').html($('#'+id+' .mailbox-from').html());
-		$('#read_date').html($('#'+id+' .mailbox-date').html());
-		
-		var decoded = $('<div/>').html($('#'+id+' .mailbox-message').html()).text();
-		//alert(decoded);
-
-		$('#read_message').html(decoded);
-		
-	  }
-	</script>
   </head>
   <body class="skin-blue sidebar-mini">
     <div class="wrapper">
@@ -94,7 +78,7 @@
                 </div>
                 <div class="box-body no-padding">
                   <ul class="nav nav-pills nav-stacked">
-                    <li id="inbox_menu" class=""><a href="#" onclick="$('#read_email').hide();$('#new_email').hide();$('#mailbox_email').show();$('#inbox_menu').addClass('active');"><i class="fa fa-inbox"></i> Inbox <span class="label label-primary pull-right"><?php echo ((isset($mailboxInfo['unread'])) && ($mailboxInfo['unread']>0)) ? $mailboxInfo['unread'] :""; ?></span></a></li>
+                    <li id="inbox_menu" class="active"><a href="#" onclick="$('#read_email').hide();$('#new_email').hide();$('#mailbox_email').show();$('#inbox_menu').addClass('active');"><i class="fa fa-inbox"></i> Inbox <span class="label label-primary pull-right"><?php echo ((isset($mailboxInfo['unread'])) && ($mailboxInfo['unread']>0)) ? $mailboxInfo['unread'] :""; ?></span></a></li>
                     <li id="sent_menu" class=""><a href="#"><i class="fa fa-envelope-o"></i> Sent</a></li>
                     <li id="draft_menu" class=""><a href="#"><i class="fa fa-file-text-o"></i> Drafts</a></li>
                     <li id="junk_menu" class=""><a href="#"><i class="fa fa-filter"></i> Junk <span class="label label-warning pull-right">65</span></a></li>
@@ -142,7 +126,7 @@
                     </div><!-- /.btn-group -->
                     <button class="btn btn-default btn-sm"><i class="fa fa-refresh"></i></button>
                     <div class="pull-right">
-                      1-50/200
+                      1-<?php echo (isset($counter)) ? $counter:""; ?>/<?php echo (isset($mailboxInfo['total'])) ? $mailboxInfo['total']:""; ?>
                       <div class="btn-group">
                         <button class="btn btn-default btn-sm"><i class="fa fa-chevron-left"></i></button>
                         <button class="btn btn-default btn-sm"><i class="fa fa-chevron-right"></i></button>
@@ -157,10 +141,10 @@
 					  ?>
                         <tr id="mail-<?php echo $idx; ?>">
                           <td><input type="checkbox" /></td>
-                          <td class="mailbox-star"><a href="#"><i class="fa fa-star text-yellow"></i></a></td>
-                          <td class="mailbox-name"><a href="#" onclick="readMail(<?php echo $value['id']; ?>);" ><?php echo $value['from']; ?></a></td>
-                          <td class="mailbox-subject"><?php if(!$value['status']){ echo '<b>'.$value['subject'].'</b>'; }else{ echo $value['subject']; } ?></td>
-                          <td class="mailbox-attachment"></td>
+                          <td class="mailbox-star"><a href="#" onclick="setFlag('#mail-<?php echo $idx; ?>')" date="<?php echo urlencode($value['date']); ?>" subject="<?php echo urlencode($value['subject']); ?>" ><i class="fa fa-star<?php if(!$value['flagged']){ echo "-o"; } ?> text-yellow" ></i></a></td>
+                          <td class="mailbox-name"><a href="#" onclick="readMail('#mail-<?php echo $idx; ?>');" date="<?php echo urlencode($value['date']); ?>" subject="<?php echo urlencode($value['subject']); ?>"><?php echo $value['from']; ?></a></td>
+                          <td class="mailbox-subject"><?php if($value['unseen']){ echo '<b>'.$value['subject'].'</b>'; }else{ echo $value['subject']; } ?></td>
+                          <td class="mailbox-attachment"><?php if($value['attachments']>0){ ?><i class="fa fa-paperclip"></i> <?php echo $value['attachments']; } ?></td>
                           <td class="mailbox-date"><?php echo $value['udate']; ?></td>
                           <td class="mailbox-message" style="display:none;"><?php //echo htmlentities($value['message']); ?></td>
                           <td class="mailbox-attachment" style="display:none;"><pre><?php //print_r($value['attachments']); ?></pre></td>
@@ -182,7 +166,7 @@
                     </div><!-- /.btn-group -->
                     <button class="btn btn-default btn-sm"><i class="fa fa-refresh"></i></button>
                     <div class="pull-right">
-                      1-50/200
+                      1-<?php echo (isset($counter)) ? $counter:""; ?>/<?php echo (isset($mailboxInfo['total'])) ? $mailboxInfo['total']:""; ?>
                       <div class="btn-group">
                         <button class="btn btn-default btn-sm"><i class="fa fa-chevron-left"></i></button>
                         <button class="btn btn-default btn-sm"><i class="fa fa-chevron-right"></i></button>
@@ -268,7 +252,7 @@
 			<?php echo form_close(); ?>
 			
 			<!--Read Message-->
-			<div class="col-md-9" id="read_email"  style="display:none;">
+			<div class="col-md-9" id="read_email" style="display:none;" >
               <div class="box box-primary">
                 <div class="box-header with-border">
                   <h3 class="box-title">Read Mail</h3>
@@ -277,7 +261,8 @@
                     <a href="#" class="btn btn-box-tool" data-toggle="tooltip" title="Next"><i class="fa fa-chevron-right"></i></a>
                   </div>
                 </div><!-- /.box-header -->
-                <div class="box-body no-padding">
+                				
+				<div class="box-body no-padding">
                   <div class="mailbox-read-info">
                     <h3 id="read_subject"></h3>
                     <h5 id="read_from">From: <span class="mailbox-read-time pull-right" id= "read_date"> </span></h5>
@@ -290,55 +275,17 @@
                     </div><!-- /.btn-group -->
                     <button class="btn btn-default btn-sm" data-toggle="tooltip" title="Print"><i class="fa fa-print"></i></button>
                   </div><!-- /.mailbox-controls -->
-                  <div class="mailbox-read-message" id="read_message">		  
-                    
+                  <div class="mailbox-read-message" id="read_message">
+                   
                   </div><!-- /.mailbox-read-message -->
                 </div><!-- /.box-body -->
-                <div class="box-footer">
 				
-                  <ul class="mailbox-attachments clearfix">
-                    <li>
-                      <span class="mailbox-attachment-icon"><i class="fa fa-file-pdf-o"></i></span>
-                      <div class="mailbox-attachment-info">
-                        <a href="#" class="mailbox-attachment-name"><i class="fa fa-paperclip"></i> Sep2014-report.pdf</a>
-                        <span class="mailbox-attachment-size">
-                          1,245 KB
-                          <a href="#" class="btn btn-default btn-xs pull-right"><i class="fa fa-cloud-download"></i></a>
-                        </span>
-                      </div>
-                    </li>
-                    <li>
-                      <span class="mailbox-attachment-icon"><i class="fa fa-file-word-o"></i></span>
-                      <div class="mailbox-attachment-info">
-                        <a href="#" class="mailbox-attachment-name"><i class="fa fa-paperclip"></i> App Description.docx</a>
-                        <span class="mailbox-attachment-size">
-                          1,245 KB
-                          <a href="#" class="btn btn-default btn-xs pull-right"><i class="fa fa-cloud-download"></i></a>
-                        </span>
-                      </div>
-                    </li>
-                    <li>
-                      <span class="mailbox-attachment-icon has-img"><img src="../../dist/img/photo1.png" alt="Attachment" /></span>
-                      <div class="mailbox-attachment-info">
-                        <a href="#" class="mailbox-attachment-name"><i class="fa fa-camera"></i> photo1.png</a>
-                        <span class="mailbox-attachment-size">
-                          2.67 MB
-                          <a href="#" class="btn btn-default btn-xs pull-right"><i class="fa fa-cloud-download"></i></a>
-                        </span>
-                      </div>
-                    </li>
-                    <li>
-                      <span class="mailbox-attachment-icon has-img"><img src="../../dist/img/photo2.png" alt="Attachment" /></span>
-                      <div class="mailbox-attachment-info">
-                        <a href="#" class="mailbox-attachment-name"><i class="fa fa-camera"></i> photo2.png</a>
-                        <span class="mailbox-attachment-size">
-                          1.9 MB
-                          <a href="#" class="btn btn-default btn-xs pull-right"><i class="fa fa-cloud-download"></i></a>
-                        </span>
-                      </div>
-                    </li>
+                <div class="box-footer">
+                  <ul class="mailbox-attachments clearfix" style="display:none;">
+                   <!-- Dynamicaly add attachment -->
                   </ul>
                 </div><!-- /.box-footer -->
+				
                 <div class="box-footer">
                   <div class="pull-right">
                     <button class="btn btn-default"><i class="fa fa-reply"></i> Reply</button>
@@ -347,6 +294,9 @@
                   <button class="btn btn-default"><i class="fa fa-trash-o"></i> Delete</button>
                   <button class="btn btn-default"><i class="fa fa-print"></i> Print</button>
                 </div><!-- /.box-footer -->
+				<div class="overlay">
+                  <i class="fa fa-refresh fa-spin"></i>
+                </div>
               </div><!-- /. box -->
             </div><!-- /.col -->
 			<!-- End Read Email-->
@@ -432,16 +382,46 @@
 	  //Read Email
 	  
 	  function readMail(id){
-		$.getJSON("<?php echo base_url()."mail/readmail/"; ?>"+id, function(data) {
+		  
+		  $('#mailbox_email').hide();
+		  $('#inbox_menu').removeClass('active');
+		  $('#new_email').hide();
+		  $('#read_email').show();
+		  		  
+		  $('#read_subject').html('');
+		  $('#read_message').html('<br/><br/><br/><br/><br/><br/><br/><br/><br/><br/>');
+		  $('#read_from').html('From:');
+		  $('#read_date').html('');
+		  $('.mailbox-attachments').html('');
+		  $('#read_email .overlay').show();
+		  //$(id+" .mailbox-name a").attr('date')
+		  //$(id+" .mailbox-name a").attr('subject')
+			
+			
+		$.getJSON("<?php echo base_url()."mail/readmail/?"; ?>date="+$(id+" .mailbox-name a").attr('date')+"&subject="+$(id+" .mailbox-name a").attr('subject'), function(data) {
 
-			$('#read_email').show();
 			$('#read_subject').html(data.subject);
 			$('#read_from').html("From: "+data.from);
-			$('#read_date').html(data.udate);
-			
-			var decoded = $('<div/>').html(data.message).text();
-			
-			$('#read_message').html(decoded);
+			$('#read_date').html(data.udate);			
+			$('#read_message').html($('<div/>').html(data.message).text());
+			$('#read_email .overlay').hide();
+						
+			//if(data.attachments.length === 0){
+				$('#read_email .mailbox-attachments').show();
+				$.each(data.attachments, function(i, item) {
+					//alert(item.name);
+					if(item.name != ''){
+						$('.mailbox-attachments').append('<li><span class="mailbox-attachment-icon"><i class="fa '+item.icon+'"></i></span><div class="mailbox-attachment-info" style="word-wrap: break-word;"><a target="_blank" href="<?php echo base_url()."mail/downloadAttachment/"; ?>?date='+$(id+" .mailbox-name a").attr('date')+'&subject='+$(id+" .mailbox-name a").attr('subject')+'&file='+item.name+'" class="mailbox-attachment-name"><i class="fa fa-paperclip"></i> '+item.name+'</a><span class="mailbox-attachment-size">'+item.size+'<a href="<?php echo base_url()."mail/downloadAttachment/"; ?>'+id+'" class="btn btn-default btn-xs pull-right"><i class="fa fa-cloud-download"></i></a></span></div></li>');	
+					}
+				});
+			//}
+			//if(data.error){ alert(data.error); }
+		});
+	  }
+	  
+	  function setFlag(id){
+		$.getJSON("<?php echo base_url()."mail/setflag/?"; ?>date="+$(id+" .mailbox-star a").attr('date')+"&subject="+$(id+" .mailbox-star a").attr('subject')+"&flag=Flagged&action="+$(id+" .mailbox-star a i").hasClass('fa-star-o'), function(data) {
+			if(data.error){ alert(data.error); }
 		});
 	  }
 	  

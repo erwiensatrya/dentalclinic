@@ -14,6 +14,7 @@ class Mail extends CI_Controller {
 		
 		$data = array();
 		$address; $email; $password;
+		$get;
 		
 	}
 
@@ -53,7 +54,7 @@ class Mail extends CI_Controller {
 				$this->email 	= $mailbox_settings->email;
 				$this->password = $mailbox_settings->password;
 
-				if ($inbox  = imap_open($this->address,$this->email,$this->password)){
+				if ($inbox  = imap_open($this->address,$this->email,$this->password, OP_READONLY)){
 				
 				$emails 			 		= imap_search($inbox,'ALL');
 				$this->data['mailboxInfo'] 	= $this->getCurrentMailboxInfo($inbox,$this->address);
@@ -65,19 +66,20 @@ class Mail extends CI_Controller {
 						foreach($emails as $email_number) {
 							$mail_row = array();
 												
-							$temp 						= $this->getMessage($inbox,$email_number);
+							$temp 						= $this->getMessage($inbox,$email_number,"false");
 							$mail_row['id']				= $temp['id'];
-							$mail_row['status']			= $temp['answered'];
+							$mail_row['flagged']		= $temp['flagged'];
+							$mail_row['unseen']			= $temp['unseen'];
 							$mail_row['subject']		= $temp['subject'];
 							$mail_row['from']   		= $temp['from'];
 							$mail_row['udate']   		= $this->time_elapsed_string($temp['udate']);
-							//$mail_row['message']   		= $temp['body'];
-							//$mail_row['attachments']   	= $temp['attachments'];
+							$mail_row['date']   		= $temp['date_sent'];
+							$mail_row['attachments']   	= sizeof($temp['attachments']);
 							$this->data['mail'][] 		= $mail_row;
 							$counter++;
-							if($counter >= 5 ){ break; };
+							if($counter >= 50 ){ break; };
 						}
-											
+						$this->data['counter'] = $counter;
 						imap_close($inbox);
 						
 					} else {
@@ -124,19 +126,41 @@ class Mail extends CI_Controller {
             }                   
 
 			if ($this->email->send()){
-				//$this->deleteAttachment(RES_DIR.'/img/'.$attachment_path);
+				$this->deleteAttachment(RES_DIR.'/img/'.$attachment_path);
 				redirect(base_url().'mail');
 			}else{
-				//$this->deleteAttachment(RES_DIR.'/img/'.$attachment_path);
+				$this->deleteAttachment(RES_DIR.'/img/'.$attachment_path);
 				$this->data['error_send_email'] = "There is error in sending mail!";
 			}
 		}	
 	
 		$this->load->view('mail/mailbox', isset($this->data) ? $this->data : NULL);
 	}
+	/**
+   * Read mail and set flas seen in mailbox from get value
+   *
+   * @param 
+   *   subject
+   *   date
+   *
+   * @return
+   *   data (json string)
+   *
+   * @throws error message when fail reading email
+   */
+	function readMail(){
 	
-	function ReadMail($id){
+		maintain_ssl($this->config->item("ssl_enabled"));
+		$this->load->library(array('account/authentication'));
+		
+		if ( ! $this->authentication->is_signed_in())
+		{
+			redirect('account/sign_in/?continue='.urlencode(base_url().'dashboard'));
+		}
+		
 		if($this->is_connected()){
+			
+			$this->load->model(array('account/mailbox_model','account/account_model','account/account_details_model'));
 			
 			/*
 			 Activate imap_open extension in Apache by doing the folowing
@@ -146,43 +170,152 @@ class Mail extends CI_Controller {
 			 - removing the beginning semicolon at the line ";extension=php_openssl.dll". 
 			   Should be: extension=php_openssl.dll
 			*/
-		
-			$dns 		= "{imap.gmail.com:993/imap/ssl/novalidate-cert}INBOX";
-			$email 		= "ikhsanrasyidi@gmail.com";
-			$password 	= "PELAJARAN.1";
-
-			if ($inbox  = imap_open($dns,$email,$password)){
+			$mailbox_settings = $this->mailbox_model->get();
 			
-			$emails 			 = imap_search($inbox,'ALL');
-											
-				if ($emails) {
-					rsort($emails);
-									
-					$temp 					= $this->getMessage($inbox,$id);
-					$data['id']				= $temp['id'];
-					$data['status']			= $temp['answered'];
-					$data['subject']		= htmlentities(stripslashes(utf8_encode($temp['subject'])), ENT_QUOTES);
-					$data['from']   		= htmlentities(stripslashes(utf8_encode($temp['from'])), ENT_QUOTES);
-					$data['udate']   		= htmlentities(stripslashes(utf8_encode(date('d F Y H:i:s',$temp['udate']))), ENT_QUOTES);
-					$data['message']   		= htmlentities(stripslashes(utf8_encode($temp['body'])), ENT_QUOTES);
-					//$data['attachments']   	= $temp['attachments'];
-															
-					imap_close($inbox);
+			if(!empty($mailbox_settings)){
+				
+				$this->address 	= "{".$mailbox_settings->mail_server."}".$mailbox_settings->mailbox;
+				$this->email 	= $mailbox_settings->email;
+				$this->password = $mailbox_settings->password;
+								
+				if ($inbox  = imap_open($this->address,$this->email,$this->password)){
+				
+				$url = parse_url($_SERVER['REQUEST_URI']);
+				if (isset($url['query'])){
+					parse_str($url['query'], $this->get);
+					$id = 'SUBJECT "'.urldecode($this->get['subject']).'" ON "'.urldecode($this->get['date']).'"';
+				}else{ $data['error'] = "Failed reading messages qualification!"; exit;}
+				
+				$emails = imap_search($inbox,$id);
 					
-				} else {
-					$data['error'] = "Failed reading messages!";
+					if ($emails) {
+						rsort($emails);
+										
+						$temp 					= $this->getMessage($inbox,$emails[0],"true");
+						imap_setflag_full($inbox, $emails[0], "\\Seen", ST_UID); 
+						$data['id']				= $temp['id'];
+						$data['unseen']			= $temp['unseen'];
+						$data['subject']		= htmlentities(stripslashes(utf8_encode($temp['subject'])), ENT_QUOTES);
+						$data['from']   		= htmlentities(stripslashes(utf8_encode($temp['from'])), ENT_QUOTES);
+						$data['udate']   		= htmlentities(stripslashes(utf8_encode(date('d F Y H:i:s',$temp['udate']))), ENT_QUOTES);
+						$data['message']   		= htmlentities(stripslashes(utf8_encode($temp['body'])), ENT_QUOTES);
+						$data['attachments']   	= $temp['attachments'];
+																
+						imap_close($inbox);
+						
+					} else {
+						$data['error'] = "Failed reading messages!";
+					}
+						
+				} else { 
+					exit; $data['error'] = "Can't connect: " . imap_last_error() ."\n"." FAIL!\n";  
 				}
-					
-			} else { 
-				exit; $data['error'] = "Can't connect: " . imap_last_error() ."\n"." FAIL!\n";  
+		
+			}else{
+				$data['error'] = "Error reading mailbox configuration!";
 			}
-		
+			
+		}else{
+			$data['error'] = "Error no internet connection!";
 		}
-		
-		echo json_encode($data, JSON_PRETTY_PRINT);		
-		//$this->load->view('mail/ReadMail', isset($data) ? $data : NULL);
+		if(empty($data)){$data['error'] = "Failed getting email";}
+		//echo "<pre>";
+		//print_r($data);
+		echo json_encode($data, JSON_PRETTY_PRINT);
+		//echo "</pre>";
 	}
 	
+	/**
+   * Set flag in message from get value
+   *
+   * @param 
+   *   subject
+   *   date
+   *   flag
+   *
+   * @return
+   *   status (string)
+   *
+   * @throws error message when fail to set flag
+   */
+	function setFlag(){
+	
+		maintain_ssl($this->config->item("ssl_enabled"));
+		$this->load->library(array('account/authentication'));
+		
+		if ( ! $this->authentication->is_signed_in())
+		{
+			redirect('account/sign_in/?continue='.urlencode(base_url().'dashboard'));
+		}
+		
+		if($this->is_connected()){
+			
+			$this->load->model(array('account/mailbox_model','account/account_model','account/account_details_model'));
+			
+			/*
+			 Activate imap_open extension in Apache by doing the folowing
+			 - open the file "\xampp\php\php.ini"
+			 - removing the beginning semicolon at the line ";extension=php_imap.dll". 
+			   Should be: extension=php_imap.dll
+			 - removing the beginning semicolon at the line ";extension=php_openssl.dll". 
+			   Should be: extension=php_openssl.dll
+			*/
+			$mailbox_settings = $this->mailbox_model->get();
+			
+			if(!empty($mailbox_settings)){
+				
+				$this->address 	= "{".$mailbox_settings->mail_server."}".$mailbox_settings->mailbox;
+				$this->email 	= $mailbox_settings->email;
+				$this->password = $mailbox_settings->password;
+								
+				if ($inbox  = imap_open($this->address,$this->email,$this->password)){
+				
+				$url = parse_url($_SERVER['REQUEST_URI']);
+				if (isset($url['query'])){
+					parse_str($url['query'], $this->get);
+					$id = 'SUBJECT "'.urldecode($this->get['subject']).'" ON "'.urldecode($this->get['date']).'"';
+				}else{ $data['error'] = "Failed reading messages qualification!"; exit;}
+				
+				$emails = imap_search($inbox,$id);
+					
+					if ($emails) {
+						if($this->get['action']=="true"){
+							imap_setflag_full($inbox, $emails[0], "\\".$this->get['flag'], ST_UID);
+						}else{
+							imap_clearflag_full($inbox, $emails[0], "\\".$this->get['flag'], ST_UID);
+						}						
+						
+						imap_close($inbox);
+						
+					} else {
+						$data['error'] = "Failed reading messages here!";
+					}
+						
+				} else { 
+					exit; $data['error'] = "Can't connect: " . imap_last_error() ."\n"." FAIL!\n";  
+				}
+		
+			}else{
+				$data['error'] = "Error reading mailbox configuration!";
+			}
+			
+		}else{
+			$data['error'] = "Error no internet connection!";
+		}
+		//if(empty($data)){$data['error'] = "Failed getting email";}
+	
+		//echo json_encode($data, JSON_PRETTY_PRINT);
+	}
+	
+	/**
+   * Get elapsed time from time() - $ptime
+   *
+   * @param 
+   *   $ptime
+   *
+   * @return 
+   *   elapsed time (string)
+   */
 	function time_elapsed_string($ptime)
 	{
 		$etime = time() - $ptime;
@@ -218,6 +351,12 @@ class Mail extends CI_Controller {
 		}
 	}
 
+	/**
+   * Check if there is internet connection
+   *
+   * @return
+   *   $is_con (boolean)
+   */
 	function is_connected()
 	{
 		$connected = @fsockopen("www.google.com", 80); 
@@ -231,7 +370,18 @@ class Mail extends CI_Controller {
 		return $is_conn;
 
 	}
-
+	
+	/**
+   * upload file to the respective path, if folder(path) dosen't exist create the folder
+   *
+   * @param 
+   *   $attachment_path
+   *   $files
+   *
+   * @return
+   * images (array)
+   *
+   */
 	 private function upload_files($attachment_path,$files)
     {
 		if (!file_exists(RES_DIR."/img/".$attachment_path)) {
@@ -273,6 +423,16 @@ class Mail extends CI_Controller {
         return $images;
     }
 	
+	/**
+   * Delete recursively folder & file in it (temporary attachment files)
+   *
+   * @param 
+   *   $path
+   *
+   * @return
+   * false (boolean)
+   *
+   */
 	function deleteAttachment($path)
 	{
 		if (is_dir($path) === true)
@@ -322,7 +482,7 @@ class Mail extends CI_Controller {
    *
    * @throws Exception when message with given id can't be found.
    */
-  function getMessage($inbox,$messageId) {
+  function getMessage($inbox,$messageId,$action=null) {
     $this->tickle($inbox);
 
     // Get message details.
@@ -338,34 +498,44 @@ class Mail extends CI_Controller {
       $deleted = ($details->Deleted == 'D');
       $answered = ($details->Answered == 'A');
       $draft = ($details->Draft == 'X');
+      $unseen = ($details->Unseen == 'U');
+      $flagged = ($details->Flagged == 'F');
+	  
+	  if($action == "true"){ // get body only when read the email message
+		  // Get the message body & set status to read
+		  $body = imap_fetchbody($inbox, $messageId, 1.2);
+		  if (!strlen($body) > 0) {
+			$body = imap_fetchbody($inbox, $messageId, 1);
+		  }  
+	  	  
+		  // Get the message body without set status read
+		  $body = imap_fetchbody($inbox, $messageId, 1.2, FT_PEEK);
+		  if (!strlen($body) > 0) {
+			$body = imap_fetchbody($inbox, $messageId, 1, FT_PEEK);
+		  }
+	  
+		  // Get the message body encoding.
+		  $encoding = $this->getEncodingType($inbox,$messageId,null);
 
-      // Get the message body.
-      $body = imap_fetchbody($inbox, $messageId, 1.2);
-      if (!strlen($body) > 0) {
-        $body = imap_fetchbody($inbox, $messageId, 1);
-      }
-
-      // Get the message body encoding.
-      $encoding = $this->getEncodingType($inbox,$messageId,null);
-
-      // Decode body into plaintext (8bit, 7bit, and binary are exempt).
-      if ($encoding == 'BASE64') {
-        $body = imap_base64($body);
-      }
-      elseif ($encoding == 'QUOTED-PRINTABLE') {
-        $body = quoted_printable_decode($body);
-      }
-      elseif ($encoding == '8BIT') {
-        $body = quoted_printable_decode(imap_8bit($body));
-      }
-      elseif ($encoding == '7BIT') {
-        $body = $this->decode7Bit($body);
-      }
+		  // Decode body into plaintext (8bit, 7bit, and binary are exempt).
+		  if ($encoding == 'BASE64') {
+			$body = imap_base64($body);
+		  }
+		  elseif ($encoding == 'QUOTED-PRINTABLE') {
+			$body = quoted_printable_decode($body);
+		  }
+		  elseif ($encoding == '8BIT') {
+			$body = quoted_printable_decode(imap_8bit($body));
+		  }
+		  elseif ($encoding == '7BIT') {
+			$body = $this->decode7Bit($body);
+		  }
+	  }else{ $body = null; }
 	
       // Build the message.
       $message = array(
 	    'id'=>$messageId,
-        'raw_header' => $raw_header,
+        //'raw_header' => $raw_header,
         'to' => $details->toaddress,
         'from' => $details->fromaddress,
         'cc' => isset($details->ccaddress) ? $details->ccaddress : '',
@@ -377,13 +547,16 @@ class Mail extends CI_Controller {
         'subject' => $details->subject,
         'deleted' => $deleted,
         'answered' => $answered,
+        'unseen' => $unseen,
+        'flagged' => $flagged,
         'draft' => $draft,
         'body' => $body,
-        'original_encoding' => $encoding,
+        //'original_encoding' => $encoding,
         'size' => $details->Size,
         'auto_response' => $autoresponse,
-		'attachments' => $this->getAttachment($inbox, $messageId)
+		'attachments' => $this->getAttachment($inbox, $messageId, $action)
       );
+	  
     }
     else {
       //throw new Exception("Message could not be found: " . imap_last_error());
@@ -393,10 +566,13 @@ class Mail extends CI_Controller {
     return $message;
   }
   
-  /*Get Attachment*/
-  function getAttachment($inbox, $messageId){
+  /*Get Attachment Info*/
+  function getAttachment($inbox, $messageId, $action=null){
+
 	$structure = imap_fetchstructure($inbox, $messageId);
-	
+	//echo "<pre>";
+	//print_r($structure);
+	//echo "<pre>=======================================";
 	$attachments = array();
 	if(isset($structure->parts) && count($structure->parts)) {
 
@@ -406,7 +582,9 @@ class Mail extends CI_Controller {
 				'is_attachment' => false,
 				'filename' => '',
 				'name' => '',
-				'attachment' => ''
+				'attachment' => '',
+				'icon' => '',
+				'size' => ''
 			);
 			
 			if($structure->parts[$i]->ifdparameters) {
@@ -414,6 +592,9 @@ class Mail extends CI_Controller {
 					if(strtolower($object->attribute) == 'filename') {
 						$attachments[$i]['is_attachment'] = true;
 						$attachments[$i]['filename'] = $object->value;
+						//$attachments[$i]['extension'] = pathinfo($object->value, PATHINFO_EXTENSION);
+						$attachments[$i]['icon'] = $this->getIcon(pathinfo($object->value, PATHINFO_EXTENSION));
+						$attachments[$i]['size'] = $this->humanFileSize($structure->parts[$i]->bytes);
 					}
 				}
 			}
@@ -423,23 +604,150 @@ class Mail extends CI_Controller {
 					if(strtolower($object->attribute) == 'name') {
 						$attachments[$i]['is_attachment'] = true;
 						$attachments[$i]['name'] = $object->value;
+						//$attachments[$i]['extension'] = pathinfo($object->value, PATHINFO_EXTENSION);
+						$attachments[$i]['icon'] = $this->getIcon(pathinfo($object->value, PATHINFO_EXTENSION));
+						$attachments[$i]['size'] = $this->humanFileSize($structure->parts[$i]->bytes);
 					}
 				}
 			}
 			
-			if($attachments[$i]['is_attachment']) {
-				$attachments[$i]['attachment'] = imap_fetchbody($inbox, $messageId, $i+1);
-				if($structure->parts[$i]->encoding == 3) { // 3 = BASE64
-					$attachments[$i]['attachment'] = base64_decode($attachments[$i]['attachment']);
-				}
-				elseif($structure->parts[$i]->encoding == 4) { // 4 = QUOTED-PRINTABLE
-					$attachments[$i]['attachment'] = quoted_printable_decode($attachments[$i]['attachment']);
+			if(!($attachments[$i]['is_attachment'])) {
+				unset($attachments[$i]);
+			}else{
+			
+			if(($action !== "true")&&($action !== "false")){
+				if($attachments[$i]['is_attachment']) {
+					$attachments[$i]['attachment'] = imap_fetchbody($inbox, $messageId, $i+1);
+					if($structure->parts[$i]->encoding == 3) { // 3 = BASE64
+						$attachments[$i]['attachment'] = base64_decode($attachments[$i]['attachment']);
+					}
+					elseif($structure->parts[$i]->encoding == 4) { // 4 = QUOTED-PRINTABLE
+						$attachments[$i]['attachment'] = quoted_printable_decode($attachments[$i]['attachment']);
+					}
 				}
 			}
-		} return $attachments;
+			}
+			
+			
+		} return array_values($attachments);
 	}
   }
-    
+  
+  /*Get Attachment icon based on extension*/
+  function getIcon($icon){
+	$icon = strtolower(trim($icon));
+	switch(true){
+		case (($icon == "jpg")||($icon == "png")||($icon == "ico")): return "fa-file-image-o"; break;
+		case (($icon == "mp3")||($icon == "wav")): return "fa-file-audio-o"; break;
+		case (($icon == "mkv")||($icon == "avi")): return "fa-file-video-o"; break;
+		case (($icon == "doc")||($icon == "docx")): return "fa-file-word-o"; break;
+		case (($icon == "xls")||($icon == "xlsx")): return "fa-file-excel-o"; break;
+		case (($icon == "ppt")||($icon == "pptx")): return "fa-file-powerpoint-o"; break;
+		case (($icon == "rar")||($icon == "zip")||($icon == "7z")||($icon == "gzip")||($icon == "tar")): return "fa-file-archive-o"; break;
+		case (($icon == "txt")||($icon == "log")||($icon == "def")||($icon == "properties")): return "fa-file-text"; break;
+		case (($icon == "pdf")): return "fa-file-pdf-o"; break;
+		default: return " fa-file-o";
+	}
+  }
+  
+  /*Get human file zise name*/
+  function humanFileSize($size,$unit="") {
+	  if( (!$unit && $size >= 1<<30) || $unit == "GB")
+		return number_format($size/(1<<30),2)."GB";
+	  if( (!$unit && $size >= 1<<20) || $unit == "MB")
+		return number_format($size/(1<<20),2)."MB";
+	  if( (!$unit && $size >= 1<<10) || $unit == "KB")
+		return number_format($size/(1<<10),2)."KB";
+	  return number_format($size)." bytes";
+  }
+  
+  /*Download Attachment*/
+  function downloadAttachment(){
+  
+	maintain_ssl($this->config->item("ssl_enabled"));
+	$this->load->library(array('account/authentication'));
+	
+	if ( ! $this->authentication->is_signed_in())
+	{
+		redirect('account/sign_in/?continue='.urlencode(base_url().'dashboard'));
+	}
+	
+	if($this->is_connected()){
+		
+		$this->load->model(array('account/mailbox_model','account/account_model','account/account_details_model'));
+		
+		/*
+		 Activate imap_open extension in Apache by doing the folowing
+		 - open the file "\xampp\php\php.ini"
+		 - removing the beginning semicolon at the line ";extension=php_imap.dll". 
+		   Should be: extension=php_imap.dll
+		 - removing the beginning semicolon at the line ";extension=php_openssl.dll". 
+		   Should be: extension=php_openssl.dll
+		*/
+		$mailbox_settings = $this->mailbox_model->get();
+		
+		if(!empty($mailbox_settings)){
+			
+			$this->address 	= "{".$mailbox_settings->mail_server."}".$mailbox_settings->mailbox;
+			$this->email 	= $mailbox_settings->email;
+			$this->password = $mailbox_settings->password;
+							
+			if ($inbox  = imap_open($this->address,$this->email,$this->password)){
+			
+			$url = parse_url($_SERVER['REQUEST_URI']);
+			if (isset($url['query'])){
+				parse_str($url['query'], $this->get);
+				$id = 'SUBJECT "'.urldecode($this->get['subject']).'" ON "'.urldecode($this->get['date']).'"';
+			}else{ $data['error'] = "Failed reading messages qualification!"; exit;}
+			
+			$emails = imap_search($inbox,$id);
+						
+				if ($emails) {
+					rsort($emails);
+					$data = $this->getAttachment($inbox, $emails[0],$this->get['file']); 		
+					   															
+					imap_close($inbox);
+					
+				} else {
+					$data['error'] = "Failed reading messages!";
+				}
+					
+			} else { 
+				exit; $data['error'] = "Can't connect: " . imap_last_error() ."\n"." FAIL!\n";  
+			}
+	
+		}else{
+			$data['error'] = "Error reading mailbox configuration!";
+		}
+		
+	}else{
+		$data['error'] = "Error no internet connection!";
+	}
+	if(empty($data)){$data['error'] = "Failed getting email";}
+	
+	foreach ($data as $id){
+		if($id['filename'] == $this->get['file']){
+			$attachment_path = md5(uniqid(rand(), true));
+			if (!file_exists(RES_DIR."/img/".$attachment_path)) {
+				mkdir(RES_DIR."/img/".$attachment_path);
+			}
+			file_put_contents(RES_DIR."/img/".$attachment_path."/".$id['filename'], $id['attachment']);
+			
+			header("Content-Type: application/octet-stream");
+			header("Content-Transfer-Encoding: Binary");
+			header("Content-disposition: attachment; filename=\"".$id['filename']."\""); 
+			readfile(base_url().RES_DIR."/img/".$attachment_path."/".$id['filename']);
+			
+			unlink(RES_DIR."/img/".$attachment_path."/".$id['filename']);
+			rmdir(RES_DIR."/img/".$attachment_path);
+			
+		}
+	}
+	
+	//echo "</pre>";
+
+  }
+  
   /**
    * Decodes 7-Bit text.
    *
@@ -640,7 +948,7 @@ class Mail extends CI_Controller {
    * @throws Exception when IMAP can't reconnect.
    */
   function reconnect($inbox) {
-    $inbox = imap_open($this->address, $this->user, $this->pass);
+    $inbox = imap_open($this->address, $this->user, $this->pass, OP_READONLY);
     if (!$inbox) {
       //throw new Exception("Reconnection Failure: " . imap_last_error());
 	  $this->data['error'] = "Reconnection Failure: " . imap_last_error();
