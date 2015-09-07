@@ -1,65 +1,148 @@
-<div class="navbar navbar-inverse navbar-fixed-top">
-    <div class="navbar-inner">
-        <div class="container">
-            <a class="btn btn-navbar" data-toggle="collapse" data-target=".nav-collapse">
-                <span class="icon-bar"></span>
-                <span class="icon-bar"></span>
-                <span class="icon-bar"></span>
-            </a>
-			<?php echo anchor('', lang('website_title'), 'class="brand"'); ?>
-            <div class="nav-collapse collapse">
-                <ul class="nav">
-                    <li class="divider-vertical"></li>
-                    <li><?php echo anchor('', 'Nav Link 1'); ?></li>
-                    <li><?php echo anchor('', 'Nav Link 2'); ?></li>
+<header class="main-header">
+
+        <!-- Logo -->
+        <a href="<?php echo base_url(); ?>" class="logo">
+          <!-- mini logo for sidebar mini 50x50 pixels -->
+          <span class="logo-mini"><i class="flaticon-tooth19"></i>D</span>
+          <!-- logo for regular state and mobile devices -->
+          <span class="logo-lg"><i class="flaticon-tooth19"></i>  <b><?php echo lang('website_title'); ?></b></span>
+        </a>
+
+        <!-- Header Navbar: style can be found in header.less -->
+        <nav class="navbar navbar-static-top" role="navigation">
+          <!-- Sidebar toggle button-->
+          <a href="#" class="sidebar-toggle" data-toggle="offcanvas" role="button">
+            <span class="sr-only">Toggle navigation</span>
+          </a>
+		  
+		  <?php if ($this->authentication->is_signed_in()) { ?>
+          <!-- Navbar Right Menu -->
+          <div class="navbar-custom-menu">
+            <ul class="nav navbar-nav">
+              <!-- Messages: style can be found in dropdown.less-->
+			  
+			  <?php 
+				if($this->authorization->is_permitted('manage_mailbox')){
+				if ((isset($mailinfo)) && ($mailinfo['unread']>0)){
+			  ?>
+				  
+              <li class="dropdown messages-menu">
+                <a href="#" class="dropdown-toggle" data-toggle="dropdown">
+                  <i class="fa fa-envelope-o"></i>
+				  <?php echo ($mailinfo['unread'])? '<span class="label label-success">'.$mailinfo['unread'].'</span>':'' ?>
+                </a>
+				<?php if ($mailinfo['unread']){ ?>
+                <ul class="dropdown-menu">
+                  <li class="header">You have <?php echo $mailinfo['unread']; ?> messages</li>
+				  
+                  <li>
+                    <!-- inner menu: contains the actual data -->
+                    <ul class="menu">
+                      <li><!-- start message -->
+                        <a href="#">
+                          <div class="pull-left">
+						 
+                            <img src="dist/img/user2-160x160.jpg" class="img-circle" alt="User Image" />
+					
+                          </div>
+                          <h4>
+                            Support Team
+                            <small><i class="fa fa-clock-o"></i> 5 mins</small>
+                          </h4>
+                          <p>Why not buy a new awesome theme?</p>
+                        </a>
+                      </li><!-- end message -->
+                    </ul>
+                  </li>
+                  <li class="footer"><a href="<?php echo base_url()."mail"; ?>">See All Messages</a></li>				  
                 </ul>
-
-                <ul class="nav pull-right">
-                    <li class="dropdown">
-                    <a href="#" class="dropdown-toggle" data-toggle="dropdown">
-						<?php if ($this->authentication->is_signed_in()) : ?>
-                        	<i class="icon-user icon-white"></i> <?php echo $account->username; ?> <b class="caret"></b></a>
-						<?php else : ?>
-                        	<i class="icon-user icon-white"></i> <b class="caret"></b></a>
-						<?php endif; ?>
-
-                        <ul class="dropdown-menu">
-							<?php if ($this->authentication->is_signed_in()) : ?>
-                                <li class="nav-header">Account Info</li>
-								<li><?php echo anchor('account/account_profile', lang('website_profile')); ?></li>
-								<li><?php echo anchor('account/account_settings', lang('website_account')); ?></li>
-								<?php if ($account->password) : ?>
-									<li><?php echo anchor('account/account_password', lang('website_password')); ?></li>
-								<?php endif; ?>
-								<li><?php echo anchor('account/account_linked', lang('website_linked')); ?></li>    
-                                <?php if ($this->authorization->is_permitted( array('retrieve_users', 'retrieve_roles', 'retrieve_permissions') )) : ?>
-                                    <li class="divider"></li>
-                                    <li class="nav-header">Admin Panel</li>
-                                    <?php if ($this->authorization->is_permitted('retrieve_users')) : ?>
-                                        <li><?php echo anchor('account/manage_users', lang('website_manage_users')); ?></li>
-                                    <?php endif; ?>
-
-                                    <?php if ($this->authorization->is_permitted('retrieve_roles')) : ?>
-                                        <li><?php echo anchor('account/manage_roles', lang('website_manage_roles')); ?></li>
-                                    <?php endif; ?>
-
-                                    <?php if ($this->authorization->is_permitted('retrieve_permissions')) : ?>
-                                        <li><?php echo anchor('account/manage_permissions', lang('website_manage_permissions')); ?></li>
-                                    <?php endif; ?>
-                                <?php endif; ?>
-
-								<li class="divider"></li>
-								<li><?php echo anchor('account/sign_out', lang('website_sign_out')); ?></li>
-							<?php else : ?>
-								<li><?php echo anchor('account/sign_in', lang('website_sign_in')); ?></li>
-							<?php endif; ?>
-
-                        </ul>
-                    </li>
+				<?php } ?>
+              </li>
+			  <?php }else{ ?>
+			  <li class="dropdown messages-menu">
+                <a class="dropdown-toggle" href="<?php echo base_url(); ?>mail">
+                  <i class="fa fa-envelope-o"></i>
+                </a>
+			  </li>
+			  <?php }
+			  
+			  } ?>
+			  
+              <!-- Notifications: style can be found in dropdown.less -->
+              <li class="dropdown notifications-menu">
+                <a href="#" class="dropdown-toggle" data-toggle="dropdown">
+                  <i class="fa fa-bell-o"></i>
+                  <span class="label label-danger">10</span>
+                </a>
+                <ul class="dropdown-menu">
+                  <li class="header">You have 10 notifications</li>
+                  <li>
+                    <!-- inner menu: contains the actual data -->
+                    <ul class="menu">
+                      <li>
+                        <a href="#">
+                          <i class="fa fa-users text-aqua"></i> 5 new members joined today
+                        </a>
+                      </li>
+                      <li>
+                        <a href="#">
+                          <i class="fa fa-warning text-yellow"></i> Very long description here that may not fit into the page and may cause design problems
+                        </a>
+                      </li>
+                      <li>
+                        <a href="#">
+                          <i class="fa fa-users text-red"></i> 5 new members joined
+                        </a>
+                      </li>
+                      <li>
+                        <a href="#">
+                          <i class="fa fa-shopping-cart text-green"></i> 25 sales made
+                        </a>
+                      </li>
+                      <li>
+                        <a href="#">
+                          <i class="fa fa-user text-red"></i> You changed your username
+                        </a>
+                      </li>
+                    </ul>
+                  </li>
+                  <li class="footer"><a href="#">View all</a></li>
                 </ul>
-
-            </div>
-            <!--/.nav-collapse -->
-        </div>
-    </div>
-</div>
+              </li>
+              
+              <!-- User Account: style can be found in dropdown.less -->
+              <li class="dropdown user user-menu">
+                <a href="#" class="dropdown-toggle" data-toggle="dropdown">
+				 <?php if ((isset($account_details->picture)) && (strlen(trim($account_details->picture))  > 0)) { echo showPhoto($account_details->picture, array('class'=>'user-image')); }else{ echo showPhoto(null,array('class'=>'user-image')); } ?>
+                  <span class="hidden-xs"><?php if ((isset($account_details->picture)) && ($account_details->fullname)){ echo $account_details->fullname; }else{ echo $account->username; }  ?></span>
+                </a>
+                <ul class="dropdown-menu">
+                  <!-- User image -->
+                  <li class="user-header">
+                   
+					<?php if (isset($account_details->picture) && strlen(trim($account_details->picture)) > 0) { echo showPhoto($account_details->picture, array('class'=>'img-circle')); }else{ echo showPhoto(null,array('class'=>'img-circle')); } ?>
+					<p>
+                      <?php echo ($account_details->fullname)? $account_details->fullname:$account->username;  ?>
+                      <small>Member since <?php echo ($account->createdon)? date_parse($account->createdon)['year']:"";  ?></small>
+                    </p>
+                  </li>
+                  <!-- Menu Footer-->
+                  <li class="user-footer">
+                    <div class="pull-left">
+                      <?php echo anchor(base_url().'account/dashboard', lang('website_my_profile'),array('class' => 'btn btn-default btn-flat')); ?>
+                    </div>
+                    <div class="pull-right">
+					  <?php echo anchor(base_url().'account/sign_out', lang('website_sign_out'),array('class' => 'btn btn-default btn-flat')); ?>
+                    </div>
+                  </li>
+                </ul>
+              </li>
+              <!-- Control Sidebar Toggle Button -->
+              <li>
+                <a href="#" data-toggle="control-sidebar"><i class="fa fa-gears"></i></a>
+              </li>
+            </ul>
+          </div>
+		  <?php } ?>
+        </nav>
+      </header>

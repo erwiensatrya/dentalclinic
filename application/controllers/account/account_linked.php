@@ -13,9 +13,9 @@ class Account_linked extends CI_Controller {
 
 		// Load the necessary stuff...
 		$this->load->config('account/account');
-		$this->load->helper(array('language', 'account/ssl', 'url'));
+		$this->load->helper(array('language', 'account/ssl', 'url', 'photo','mailbox'));
 		$this->load->library(array('account/authentication', 'account/authorization', 'form_validation'));
-		$this->load->model(array('account/account_model', 'account/account_facebook_model', 'account/account_twitter_model', 'account/account_openid_model'));
+		$this->load->model(array('account/account_model', 'account/account_details_model', 'account/account_facebook_model', 'account/account_twitter_model', 'account/account_openid_model'));
 		$this->load->language(array('general', 'account/account_linked', 'account/connect_third_party'));
 	}
 
@@ -32,10 +32,19 @@ class Account_linked extends CI_Controller {
 		{
 			redirect('account/sign_in/?continue='.urlencode(base_url().'account/account_linked'));
 		}
-
+		// Active Sidebar_L Menu
+		$data['accountinfo'] = true;
+		$data['accountlinked'] = true;
+		
 		// Retrieve sign in user
 		$data['account'] = $this->account_model->get_by_id($this->session->userdata('account_id'));
+		$data['account_details'] = $this->account_details_model->get_by_account_id($this->session->userdata('account_id'));
 
+		if($this->authorization->is_permitted('manage_mailbox')){
+			$this->load->helper('mailbox');
+			$data['mailinfo'] = mailInfo();
+		}
+			
 		// Delete a linked account
 		if ($this->input->post('facebook_id') || $this->input->post('twitter_id') || $this->input->post('openid'))
 		{

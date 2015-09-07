@@ -1,5 +1,7 @@
 /A3M.komodoproject
 #Ignore log files of any kind
 log-*.php
+*sublime*
 
 /user_guide
+resource/img/dreamstimezoom_43822823.jpg

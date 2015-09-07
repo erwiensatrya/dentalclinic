@@ -72,6 +72,18 @@ class Sign_up extends CI_Controller {
 				// Add user details (auto detected country, language, timezone)
 				$this->account_details_model->update($user_id);
 
+				// Create folder for specific user if not found
+				if (!file_exists(RES_DIR."/user/".$user_id)) {
+					mkdir(RES_DIR."/user/".$user_id);
+					copy(RES_DIR."/user/index.html", RES_DIR."/user/".$user_id."/index.html" );
+				}
+				
+				// Generate QR Code
+				if (!file_exists(RES_DIR."/user/".$user_id."/qr-".$user_id.".png")) {
+					include RES_DIR.'/adminlte/plugins/qrcode/phpqrcode/qrlib.php';
+					QRcode::png("#".$user_id."#".$this->input->post('sign_up_username', TRUE)."#".$this->input->post('sign_up_email', TRUE), RES_DIR."/user/".$user_id."/qr-".$user_id.".png", "H", 10, 2);
+				}
+			
 				// Auto sign in?
 				if ($this->config->item("sign_up_auto_sign_in"))
 				{

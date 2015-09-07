@@ -13,7 +13,7 @@ class Account_settings extends CI_Controller {
 
 		// Load the necessary stuff...
 		$this->load->config('account/account');
-		$this->load->helper(array('date', 'language', 'account/ssl', 'url'));
+		$this->load->helper(array('date', 'language', 'account/ssl', 'url', 'photo', 'mailbox'));
 		$this->load->library(array('account/authentication', 'account/authorization', 'form_validation'));
 		$this->load->model(array('account/account_model', 'account/account_details_model', 'account/ref_country_model', 'account/ref_language_model', 'account/ref_zoneinfo_model'));
 		$this->load->language(array('general', 'account/account_settings'));
@@ -33,10 +33,19 @@ class Account_settings extends CI_Controller {
 			redirect('account/sign_in/?continue='.urlencode(base_url().'account/account_settings'));
 		}
 
+		// Active Sidebar_L Menu
+		$data['accountinfo'] = true;
+		$data['accountsettings'] = true;
+		
 		// Retrieve sign in user
 		$data['account'] = $this->account_model->get_by_id($this->session->userdata('account_id'));
 		$data['account_details'] = $this->account_details_model->get_by_account_id($this->session->userdata('account_id'));
-
+		
+		if($this->authorization->is_permitted('manage_mailbox')){
+			$this->load->helper('mailbox');
+			$data['mailinfo'] = mailInfo();
+		}
+			
 		// Retrieve countries, languages and timezones
 		$data['countries'] = $this->ref_country_model->get_all();
 		$data['languages'] = $this->ref_language_model->get_all();

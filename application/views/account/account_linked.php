@@ -1,42 +1,71 @@
 <!DOCTYPE html>
 <html>
-<head>
-	<?php echo $this->load->view('head', array('title' => lang('linked_page_name'))); ?>
+  <head>
+  <title><?php echo lang('website_title'); ?> | <?php echo lang('linked_page_name'); ?> </title>
+  <?php echo $this->load->view('head'); ?>
+  
+   <!-- AdminLTE Skins. Choose a skin from the css/skins
+         folder instead of downloading all of them to reduce the load. -->
+    <link href="<?php echo base_url().RES_DIR; ?>/adminlte/dist/css/account_linked.css" rel="stylesheet" type="text/css" />
+  </head>
+  <body class="skin-blue sidebar-mini">
+    <div class="wrapper">
+	
+	<?php echo $this->load->view('header'); ?>
+	<!-- Left side column. contains the logo and sidebar -->
+	<?php echo $this->load->view('aside_l'); ?>
+	<!-- /.sidebar -->
+	
+      <!-- Content Wrapper. Contains page content -->
+      <div class="content-wrapper">
+        <!-- Content Header (Page header) -->
+        <section class="content-header">
+          <h1>
+            <?php echo lang('linked_page_name'); ?>
+            <small><?php //echo lang('website_version'); ?></small>
+          </h1>
+          <ol class="breadcrumb">
+            <li>
+			<a href="<?php echo base_url(); ?>"><i class="fa fa-dashboard"></i> Home</a></li>
+            <li><?php echo lang('account_info_title'); ?></li>
+            <li class="active"><?php echo lang('linked_page_name'); ?></li>
+          </ol>
+        </section>
 
-</head>
-<body>
-
-<?php echo $this->load->view('header'); ?>
-
-<div class="container">
-    <div class="row">
-        <div class="span2">
-			<?php echo $this->load->view('account/account_menu', array('current' => 'account_linked')); ?>
+		 <div class="pad margin no-print">
+          <div class="callout callout-info" style="margin-bottom: 0!important;">
+            <h4><i class="fa fa-info"></i> Note:</h4>
+            <?php echo lang('linked_page_satement'); ?>
+          </div>
         </div>
-        <div class="span10">
+						
+		<?php if ($this->session->flashdata('linked_info')) : ?>
+		<div class="pad margin no-print alert alert-success fade in">
+			<button type="button" class="close" data-dismiss="alert">&times;</button>
+			<?php echo $this->session->flashdata('linked_info'); ?>
+		</div>
+		<?php endif; ?>
 
-			<?php if ($this->session->flashdata('linked_info')) : ?>
-            <div class="alert alert-success fade in">
-                <button type="button" class="close" data-dismiss="alert">&times;</button>
-				<?php echo $this->session->flashdata('linked_info'); ?>
-            </div>
-			<?php endif; ?>
-
-			<?php if ($this->session->flashdata('linked_error')) : ?>
-            <div class="alert alert-error fade in">
-                <button type="button" class="close" data-dismiss="alert">&times;</button>
-				<?php echo $this->session->flashdata('linked_error'); ?>
-            </div>
-			<?php endif; ?>
-
-            <h2><?php echo lang('linked_page_name'); ?></h2>
-
-            <div class="well"><?php echo lang('linked_page_satement'); ?></div>
-
-            <h3><?php echo lang('linked_currently_linked_accounts'); ?></h3>
-
-
-			<?php if ($num_of_linked_accounts == 0) : ?>
+		<?php if ($this->session->flashdata('linked_error')) : ?>
+		<div class="pad margin no-print alert alert-error fade in">
+			<button type="button" class="close" data-dismiss="alert">&times;</button>
+			<?php echo $this->session->flashdata('linked_error'); ?>
+		</div>
+		<?php endif; ?>
+			
+        <!-- Main content -->
+        <section class="content">
+          
+           <!-- Horizontal Form -->
+		  
+              <div class="box box-info">
+                <div class="box-header with-border">
+                  <h3 class="box-title"><?php echo lang('linked_currently_linked_accounts'); ?></h3>
+                </div><!-- /.box-header -->
+				
+                <!-- form start -->
+                  <div class="box-body">
+				  	<?php if ($num_of_linked_accounts == 0) : ?>
             <div class="alert alert-error">
 				<?php echo lang('linked_no_linked_accounts'); ?>
             </div>
@@ -131,13 +160,29 @@
 				<?php foreach ($this->config->item('third_party_auth_providers') as $provider) : ?>
                 <li class="third_party <?php echo $provider; ?>"><?php echo anchor('account/connect_'.$provider, ' ', array('title' => sprintf(lang('connect_with_x'), lang('connect_'.$provider)))); ?></li>
 				<?php endforeach; ?>
-            </ul>
+            </ul>		  
+					
+                    
+                   
+                  </div><!-- /.box-body -->
+        
+              </div><!-- /.box -->
 
-        </div>
-    </div>
-</div>
+        </section><!-- /.content -->
+      </div><!-- /.content-wrapper -->
 
-<?php echo $this->load->view('footer'); ?>
+      <?php echo $this->load->view('footer'); ?>
+      <?php echo $this->load->view('aside_r'); ?>
 
-</body>
+      <!-- Control Sidebar -->
+      
+      <!-- Add the sidebar's background. This div must be placed
+           immediately after the control sidebar -->
+      <div class="control-sidebar-bg"></div>
+
+    </div><!-- ./wrapper -->
+
+    <?php echo $this->load->view('footer_js'); ?>
+
+  </body>
 </html>

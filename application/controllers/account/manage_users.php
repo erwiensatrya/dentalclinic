@@ -13,7 +13,7 @@ class Manage_users extends CI_Controller {
 
     // Load the necessary stuff...
     $this->load->config('account/account');
-    $this->load->helper(array('date', 'language', 'account/ssl', 'url'));
+    $this->load->helper(array('date', 'language', 'account/ssl', 'url', 'photo', 'mailbox'));
     $this->load->library(array('account/authentication', 'account/authorization', 'form_validation'));
     $this->load->model(array('account/account_model', 'account/account_details_model', 'account/acl_permission_model', 'account/acl_role_model', 'account/rel_account_permission_model', 'account/rel_account_role_model', 'account/rel_role_permission_model'));
     $this->load->language(array('general', 'account/manage_users', 'account/account_settings', 'account/account_profile', 'account/sign_up', 'account/account_password'));
@@ -38,10 +38,20 @@ class Manage_users extends CI_Controller {
     {
       redirect('account/account_profile');
     }
-
-    // Retrieve sign in user
-    $data['account'] = $this->account_model->get_by_id($this->session->userdata('account_id'));
-
+	$data['datatable'] = true;
+	
+    $data['adminpanel'] = true;
+	$data['manageuser'] = true;
+		
+	// Retrieve sign in user
+	$data['account'] = $this->account_model->get_by_id($this->session->userdata('account_id'));
+	$data['account_details'] = $this->account_details_model->get_by_account_id($this->session->userdata('account_id'));
+		
+	if($this->authorization->is_permitted('manage_mailbox')){
+		$this->load->helper('mailbox');
+		$data['mailinfo'] = mailInfo();
+	}
+			
     // Get all user information
     $all_accounts = $this->account_model->get();
     $all_account_details = $this->account_details_model->get();
@@ -116,9 +126,12 @@ class Manage_users extends CI_Controller {
       redirect('account/manage_users');
     }
 
-    // Retrieve sign in user
-    $data['account'] = $this->account_model->get_by_id($this->session->userdata('account_id'));
-
+    $data['adminpanel'] = true;
+	$data['manageuser'] = true;
+		
+	// Retrieve sign in user
+	$data['account'] = $this->account_model->get_by_id($this->session->userdata('account_id'));
+	$data['account_details'] = $this->account_details_model->get_by_account_id($this->session->userdata('account_id'));
     // Get all the roles
     $data['roles'] = $this->acl_role_model->get();
 
@@ -195,6 +208,19 @@ class Manage_users extends CI_Controller {
             $this->input->post('users_username', TRUE), 
             $this->input->post('users_email', TRUE), 
             $this->input->post('users_new_password', TRUE));
+			
+			 // Create folder for specific user if not found
+			if (!file_exists(RES_DIR."/user/".$id)) {
+				mkdir(RES_DIR."/user/".$id);
+				copy(RES_DIR."/user/index.html", RES_DIR."/user/".$id."/index.html" );
+			}
+			
+			// Generate QR Code
+			if (!file_exists(RES_DIR."/user/".$id."/qr-".$id.".png")) {
+				include RES_DIR.'/adminlte/plugins/qrcode/phpqrcode/qrlib.php';
+				QRcode::png("#".$id."#".$this->input->post('users_username', TRUE)."#".$this->input->post('users_email', TRUE), RES_DIR."/user/".$id."/qr-".$id.".png", "H", 10, 2);
+			}
+
         }
         // Update existing user information
         else 
@@ -226,13 +252,25 @@ class Manage_users extends CI_Controller {
               $this->account_model->remove_suspended_datetime($id);
             }
           }
+		  	
+		    // Create folder for specific user if not found
+			if (!file_exists(RES_DIR."/user/".$id)) {
+				mkdir(RES_DIR."/user/".$id);
+				copy(RES_DIR."/user/index.html", RES_DIR."/user/".$id."/index.html" );
+			}
+			
+			// Generate QR Code
+			if (!file_exists(RES_DIR."/user/".$id."/qr-".$id.".png")) {
+				include RES_DIR.'/adminlte/plugins/qrcode/phpqrcode/qrlib.php';
+				QRcode::png("#".$id."#".$this->input->post('users_username', TRUE)."#".$this->input->post('users_email', TRUE), RES_DIR."/user/".$id."/qr-".$id.".png", "H", 10, 2);
+			}		
         }
 
         // Update account details
         $attributes = array();
-        $attributes['fullname'] = $this->input->post('users_fullname', TRUE) ? $this->input->post('users_fullname', TRUE) : NULL;
-        $attributes['firstname'] = $this->input->post('users_firstname', TRUE) ? $this->input->post('users_firstname', TRUE) : NULL;
+        $attributes['firstname']= $this->input->post('users_firstname', TRUE) ? $this->input->post('users_firstname', TRUE) : NULL;
         $attributes['lastname'] = $this->input->post('users_lastname', TRUE) ? $this->input->post('users_lastname', TRUE) : NULL;
+		$attributes['fullname'] = $this->input->post('users_fullname', TRUE) ? $this->input->post('users_fullname', TRUE) : trim($attributes['firstname']." ".$attributes['lastname']);
         $this->account_details_model->update($id, $attributes);
 
         // Apply roles
