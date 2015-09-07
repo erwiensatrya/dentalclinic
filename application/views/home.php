@@ -49,14 +49,21 @@
               <div class="navbar-custom-menu">
                 <ul class="nav navbar-nav">
                   <!-- Messages: style can be found in dropdown.less-->
+				  
+				  <?php 
+						if($this->authorization->is_permitted('manage_mailbox')){
+						if ((isset($mailinfo)) && ($mailinfo['unread']>0)){
+				  ?>
+					 
                   <li class="dropdown messages-menu">
                     <!-- Menu toggle button -->
                     <a href="#" class="dropdown-toggle" data-toggle="dropdown">
                       <i class="fa fa-envelope-o"></i>
-                      <span class="label label-success">4</span>
+                      <?php echo ($mailinfo['unread'])? '<span class="label label-success">'.$mailinfo['unread'].'</span>':'' ?>
                     </a>
-                    <ul class="dropdown-menu">
-                      <li class="header">You have 4 messages</li>
+					 <?php if ($mailinfo['unread']){ ?>
+                    <ul class="dropdown-menu">					
+                      <li class="header">You have <?php echo $mailinfo['unread']; ?> messages</li>
                       <li>
                         <!-- inner menu: contains the messages -->
                         <ul class="menu">
@@ -77,10 +84,19 @@
                           </li><!-- end message -->
                         </ul><!-- /.menu -->
                       </li>
-                      <li class="footer"><a href="#">See All Messages</a></li>
+                      <li class="footer"><a href="mail">See All Messages</a></li>
                     </ul>
+					 <?php } ?>
                   </li><!-- /.messages-menu -->
 
+				  <?php }else if((isset($mailinfo)) && ($mailinfo['unread']= 0)){ ?>
+					<a href="mail" >
+                      <i class="fa fa-envelope-o"></i>
+                      <?php echo ($mailinfo['unread'])? '<span class="label label-success">'.$mailinfo['unread'].'</span>':'' ?>
+                    </a>
+				  <?php }
+				  
+				  } ?>
                   <!-- Notifications Menu -->
                   <li class="dropdown notifications-menu">
                     <!-- Menu toggle button -->

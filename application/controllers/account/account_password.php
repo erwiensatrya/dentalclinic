@@ -13,7 +13,7 @@ class Account_password extends CI_Controller {
 
 		// Load the necessary stuff...
 		$this->load->config('account/account');
-		$this->load->helper(array('date', 'language', 'account/ssl', 'url', 'photo'));
+		$this->load->helper(array('date', 'language', 'account/ssl', 'url', 'photo', 'mailbox'));
 		$this->load->library(array('account/authentication', 'account/authorization', 'form_validation', 'gravatar'));
 		$this->load->model(array('account/account_model', 'account/account_details_model'));
 		$this->load->language(array('general', 'account/account_password'));
@@ -41,6 +41,11 @@ class Account_password extends CI_Controller {
 		$data['account'] = $this->account_model->get_by_id($this->session->userdata('account_id'));
 		$data['account_details'] = $this->account_details_model->get_by_account_id($this->session->userdata('account_id'));
 		
+		if($this->authorization->is_permitted('manage_mailbox')){
+			$this->load->helper('mailbox');
+			$data['mailinfo'] = mailInfo();
+		}
+			
 		// Retrieve user's gravatar if available
 		$data['gravatar'] = $this->gravatar->get_gravatar( $data['account']->email );
 

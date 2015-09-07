@@ -20,14 +20,20 @@
           <div class="navbar-custom-menu">
             <ul class="nav navbar-nav">
               <!-- Messages: style can be found in dropdown.less-->
+			  
+			  <?php 
+				if($this->authorization->is_permitted('manage_mailbox')){
+				if ((isset($mailinfo)) && ($mailinfo['unread']>0)){
+			  ?>
+				  
               <li class="dropdown messages-menu">
                 <a href="#" class="dropdown-toggle" data-toggle="dropdown">
                   <i class="fa fa-envelope-o"></i>
-				  <?php if((isset($mailboxInfo['unread'])) && ($mailboxInfo['unread']>0)){ echo '<span class="label label-danger">'.$mailboxInfo['unread'].'</span>'; } ?>
+				  <?php echo ($mailinfo['unread'])? '<span class="label label-success">'.$mailinfo['unread'].'</span>':'' ?>
                 </a>
-				<?php if((isset($mailboxInfo['unread']))&&($mailboxInfo['unread']>0)){ ?>
+				<?php if ($mailinfo['unread']){ ?>
                 <ul class="dropdown-menu">
-                  <li class="header">You have <?php echo $mailboxInfo['unread']; ?> messages</li>
+                  <li class="header">You have <?php echo $mailinfo['unread']; ?> messages</li>
 				  
                   <li>
                     <!-- inner menu: contains the actual data -->
@@ -48,10 +54,20 @@
                       </li><!-- end message -->
                     </ul>
                   </li>
-                  <li class="footer"><a href="<?php echo base_url()."mail"; ?>">See All Messages</a></li>
+                  <li class="footer"><a href="<?php echo base_url()."mail"; ?>">See All Messages</a></li>				  
                 </ul>
 				<?php } ?>
               </li>
+			  <?php }else{ ?>
+			  <li class="dropdown messages-menu">
+                <a class="dropdown-toggle" href="<?php echo base_url(); ?>mail">
+                  <i class="fa fa-envelope-o"></i>
+                </a>
+			  </li>
+			  <?php }
+			  
+			  } ?>
+			  
               <!-- Notifications: style can be found in dropdown.less -->
               <li class="dropdown notifications-menu">
                 <a href="#" class="dropdown-toggle" data-toggle="dropdown">

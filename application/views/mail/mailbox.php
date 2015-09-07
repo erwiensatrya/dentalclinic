@@ -1,36 +1,10 @@
 <!DOCTYPE html>
 <html>
   <head>
-    <meta charset="UTF-8">
-	<link rel="shortcut icon" href="<?php echo base_url(); ?>favicon.ico"/>
     <title><?php echo lang('website_title'); ?> | <?php echo lang('mailbox_title'); ?></title>
-    <!-- Tell the browser to be responsive to screen width -->
-    <meta content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no" name="viewport">
-    <!-- Bootstrap 3.3.4 -->
-    <link href="<?php echo base_url().RES_DIR; ?>/adminlte/bootstrap/css/bootstrap.min.css" rel="stylesheet" type="text/css" />
-    <!-- Font Awesome Icons -->
-    <link href="<?php echo base_url().RES_DIR; ?>/adminlte/dist/css/font-awesome.min.css" rel="stylesheet" type="text/css" />
-    <!-- Ionicons -->
-    <link href="<?php echo base_url().RES_DIR; ?>/adminlte/dist/css/ionicons.min.css" rel="stylesheet" type="text/css" />
-    <!-- fullCalendar 2.2.5-->
-    <link href="<?php echo base_url().RES_DIR; ?>/adminlte/plugins/fullcalendar/fullcalendar.min.css" rel="stylesheet" type="text/css" />
-    <link href="<?php echo base_url().RES_DIR; ?>/adminlte/plugins/fullcalendar/fullcalendar.print.css" rel="stylesheet" type="text/css" media='print' />
-    <!-- Theme style -->
-    <link href="<?php echo base_url().RES_DIR; ?>/adminlte/dist/css/AdminLTE.min.css" rel="stylesheet" type="text/css" />
-    <!-- AdminLTE Skins. Choose a skin from the css/skins
-         folder instead of downloading all of them to reduce the load. -->
-    <link href="<?php echo base_url().RES_DIR; ?>/adminlte/dist/css/skins/_all-skins.min.css" rel="stylesheet" type="text/css" />
-    <!-- iCheck -->
-    <link href="<?php echo base_url().RES_DIR; ?>/adminlte/plugins/iCheck/flat/blue.css" rel="stylesheet" type="text/css" />
-	<!-- bootstrap wysihtml5 - text editor -->
-    <link href="<?php echo base_url().RES_DIR; ?>/adminlte/plugins/bootstrap-wysihtml5/bootstrap3-wysihtml5.min.css" rel="stylesheet" type="text/css" />
-    <!-- HTML5 Shim and Respond.js IE8 support of HTML5 elements and media queries -->
-    <!-- WARNING: Respond.js doesn't work if you view the page via file:// -->
-    <!--[if lt IE 9]>
-        <script src="https://oss.maxcdn.com/html5shiv/3.7.2/html5shiv.min.js"></script>
-        <script src="https://oss.maxcdn.com/respond/1.4.2/respond.min.js"></script>
-    <![endif]-->
-	
+   
+    <?php echo $this->load->view('head'); ?>
+   
   </head>
   <body class="skin-blue sidebar-mini">
     <div class="wrapper">
@@ -81,7 +55,6 @@
                     <li id="inbox_menu" class="active"><a href="#" onclick="$('#read_email').hide();$('#new_email').hide();$('#mailbox_email').show();$('#inbox_menu').addClass('active');"><i class="fa fa-inbox"></i> Inbox <span class="label label-primary pull-right"><?php echo ((isset($mailboxInfo['unread'])) && ($mailboxInfo['unread']>0)) ? $mailboxInfo['unread'] :""; ?></span></a></li>
                     <li id="sent_menu" class=""><a href="#"><i class="fa fa-envelope-o"></i> Sent</a></li>
                     <li id="draft_menu" class=""><a href="#"><i class="fa fa-file-text-o"></i> Drafts</a></li>
-                    <li id="junk_menu" class=""><a href="#"><i class="fa fa-filter"></i> Junk <span class="label label-warning pull-right">65</span></a></li>
                     <li id="trash_menu" class=""><a href="#"><i class="fa fa-trash-o"></i> Trash</a></li>
                   </ul>
                 </div><!-- /.box-body -->
@@ -95,9 +68,7 @@
                 </div>
                 <div class="box-body no-padding">
                   <ul class="nav nav-pills nav-stacked">
-                    <li><a href="#"><i class="fa fa-circle-o text-red"></i> Important</a></li>
-                    <li><a href="#"><i class="fa fa-circle-o text-yellow"></i> Promotions</a></li>
-                    <li><a href="#"><i class="fa fa-circle-o text-light-blue"></i> Social</a></li>
+                    <li><a href="#"><i class="fa fa-star text-yellow"></i> Important</a></li>
                   </ul>
                 </div><!-- /.box-body -->
               </div><!-- /.box -->
@@ -141,13 +112,11 @@
 					  ?>
                         <tr id="mail-<?php echo $idx; ?>">
                           <td><input type="checkbox" /></td>
-                          <td class="mailbox-star"><a href="#" onclick="setFlag('#mail-<?php echo $idx; ?>')" date="<?php echo urlencode($value['date']); ?>" subject="<?php echo urlencode($value['subject']); ?>" ><i class="fa fa-star<?php if(!$value['flagged']){ echo "-o"; } ?> text-yellow" ></i></a></td>
-                          <td class="mailbox-name"><a href="#" onclick="readMail('#mail-<?php echo $idx; ?>');" date="<?php echo urlencode($value['date']); ?>" subject="<?php echo urlencode($value['subject']); ?>"><?php echo $value['from']; ?></a></td>
+                          <td class="mailbox-star"><a href="#" onclick="setFlag('#mail-<?php echo $idx; ?>')" mailbox="<?php echo $value['mailbox']; ?>" uidvalidity="<?php echo $value['uidvalidity']; ?>" id_msg="<?php echo $value['id']; ?>" date="<?php echo urlencode($value['date']); ?>"><i class="fa fa-star<?php if(!$value['flagged']){ echo "-o"; } ?> text-yellow" ></i></a></td>
+                          <td class="mailbox-name"><a href="#" onclick="readMail('#mail-<?php echo $idx; ?>');" mailbox="<?php echo $value['mailbox']; ?>" uidvalidity="<?php echo $value['uidvalidity']; ?>" id_msg="<?php echo $value['id']; ?>" date="<?php echo urlencode($value['date']); ?>"><?php echo $value['from']; ?></a></td>
                           <td class="mailbox-subject"><?php if($value['unseen']){ echo '<b>'.$value['subject'].'</b>'; }else{ echo $value['subject']; } ?></td>
                           <td class="mailbox-attachment"><?php if($value['attachments']>0){ ?><i class="fa fa-paperclip"></i> <?php echo $value['attachments']; } ?></td>
                           <td class="mailbox-date"><?php echo $value['udate']; ?></td>
-                          <td class="mailbox-message" style="display:none;"><?php //echo htmlentities($value['message']); ?></td>
-                          <td class="mailbox-attachment" style="display:none;"><pre><?php //print_r($value['attachments']); ?></pre></td>
                         </tr>
 					  <?php }
 					  } ?>
@@ -185,6 +154,7 @@
                 <div class="box-header with-border">
                   <h3 class="box-title">Compose New Message</h3>
                 </div><!-- /.box-header -->
+				<input name="id_email" value="" />
                 <div class="box-body">
                   <div class="form-group <?php echo (form_error('mail_to')) ? 'has-error' : ''; ?>">
 				  
@@ -242,7 +212,7 @@
                 </div><!-- /.box-body -->
                 <div class="box-footer">
                   <div class="pull-right">
-                    <button class="btn btn-default"><i class="fa fa-pencil"></i> Draft</button>
+                    <button type="submit" class="btn btn-default" name="draft_email"><i class="fa fa-pencil"></i> Draft</button>
                     <button type="submit" class="btn btn-primary" name="send_email" value="send_email" id="send_email"><i class="fa fa-envelope-o"></i> Send</button>
                   </div>
                 </div><!-- /.box-footer -->
@@ -306,29 +276,12 @@
         </section><!-- /.content -->
       </div><!-- /.content-wrapper -->
       
-	 
-            
-          
-	  
+
 	<?php echo $this->load->view('footer'); ?>	
       
       <div class="control-sidebar-bg"></div>
     </div><!-- ./wrapper -->
-
-    <!-- jQuery 2.1.4 -->
-    <script src="<?php echo base_url().RES_DIR; ?>/adminlte/plugins/jQuery/jQuery-2.1.4.min.js" type="text/javascript"></script>
-    <!-- Bootstrap 3.3.2 JS -->
-    <script src="<?php echo base_url().RES_DIR; ?>/adminlte/bootstrap/js/bootstrap.min.js" type="text/javascript"></script>
-    <!-- Slimscroll -->
-    <script src="<?php echo base_url().RES_DIR; ?>/adminlte/plugins/slimScroll/jquery.slimscroll.min.js" type="text/javascript"></script>
-    <!-- FastClick -->
-    <script src="<?php echo base_url().RES_DIR; ?>/adminlte/plugins/fastclick/fastclick.min.js" type="text/javascript"></script>
-    <!-- AdminLTE App -->
-    <script src="<?php echo base_url().RES_DIR; ?>/adminlte/dist/js/app.min.js" type="text/javascript"></script>
-    <!-- iCheck -->
-    <script src="<?php echo base_url().RES_DIR; ?>/adminlte/plugins/iCheck/icheck.min.js" type="text/javascript"></script>
-	<!-- Bootstrap WYSIHTML5 -->
-    <script src="<?php echo base_url().RES_DIR; ?>/adminlte/plugins/bootstrap-wysihtml5/bootstrap3-wysihtml5.all.min.js" type="text/javascript"></script>
+	<?php echo $this->load->view('footer_js'); ?>
     <!-- Page Script -->
     <script>
       $(function () {
@@ -398,7 +351,7 @@
 		  //$(id+" .mailbox-name a").attr('subject')
 			
 			
-		$.getJSON("<?php echo base_url()."mail/readmail/?"; ?>date="+$(id+" .mailbox-name a").attr('date')+"&subject="+$(id+" .mailbox-name a").attr('subject'), function(data) {
+		$.getJSON("<?php echo base_url()."mail/readmail/?"; ?>id="+$(id+" .mailbox-name a").attr('id_msg')+"&mailbox="+$(id+" .mailbox-name a").attr('mailbox')+"&date="+$(id+" .mailbox-name a").attr('date'), function(data) {
 
 			$('#read_subject').html(data.subject);
 			$('#read_from').html("From: "+data.from);
@@ -411,7 +364,7 @@
 				$.each(data.attachments, function(i, item) {
 					//alert(item.name);
 					if(item.name != ''){
-						$('.mailbox-attachments').append('<li><span class="mailbox-attachment-icon"><i class="fa '+item.icon+'"></i></span><div class="mailbox-attachment-info" style="word-wrap: break-word;"><a target="_blank" href="<?php echo base_url()."mail/downloadAttachment/"; ?>?date='+$(id+" .mailbox-name a").attr('date')+'&subject='+$(id+" .mailbox-name a").attr('subject')+'&file='+item.name+'" class="mailbox-attachment-name"><i class="fa fa-paperclip"></i> '+item.name+'</a><span class="mailbox-attachment-size">'+item.size+'<a href="<?php echo base_url()."mail/downloadAttachment/"; ?>'+id+'" class="btn btn-default btn-xs pull-right"><i class="fa fa-cloud-download"></i></a></span></div></li>');	
+						$('.mailbox-attachments').append('<li><span class="mailbox-attachment-icon"><i class="fa '+item.icon+'"></i></span><div class="mailbox-attachment-info" style="word-wrap: break-word;"><a target="_blank" href="<?php echo base_url()."mail/downloadAttachment/"; ?>?id='+$(id+" .mailbox-name a").attr('id_msg')+'&mailbox='+$(id+" .mailbox-name a").attr('mailbox')+'&date='+$(id+" .mailbox-name a").attr('date')+'&file='+item.name+'" class="mailbox-attachment-name"><i class="fa fa-paperclip"></i> '+item.name+'</a><span class="mailbox-attachment-size">'+item.size+'<a href="<?php echo base_url()."mail/downloadAttachment/"; ?>'+id+'" class="btn btn-default btn-xs pull-right"><i class="fa fa-cloud-download"></i></a></span></div></li>');	
 					}
 				});
 			//}
@@ -420,7 +373,7 @@
 	  }
 	  
 	  function setFlag(id){
-		$.getJSON("<?php echo base_url()."mail/setflag/?"; ?>date="+$(id+" .mailbox-star a").attr('date')+"&subject="+$(id+" .mailbox-star a").attr('subject')+"&flag=Flagged&action="+$(id+" .mailbox-star a i").hasClass('fa-star-o'), function(data) {
+		$.getJSON("<?php echo base_url()."mail/setflag/?"; ?>id="+$(id+" .mailbox-name a").attr('id_msg')+"&mailbox="+$(id+" .mailbox-name a").attr('mailbox')+"&date="+$(id+" .mailbox-star a").attr('date')+"&flag=Flagged&action="+$(id+" .mailbox-star a i").hasClass('fa-star-o'), function(data) {
 			if(data.error){ alert(data.error); }
 		});
 	  }

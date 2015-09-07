@@ -56,9 +56,9 @@ class Mail extends CI_Controller {
 
 				if ($inbox  = imap_open($this->address,$this->email,$this->password, OP_READONLY)){
 				
+				$this->data['mailInfo'] 	= $this->getCurrentMailboxInfo($inbox,$this->address);
 				$emails 			 		= imap_search($inbox,'ALL');
-				$this->data['mailboxInfo'] 	= $this->getCurrentMailboxInfo($inbox,$this->address);
-									
+				
 					if ($emails) {
 						rsort($emails);
 						$counter = 0;
@@ -68,6 +68,8 @@ class Mail extends CI_Controller {
 												
 							$temp 						= $this->getMessage($inbox,$email_number,"false");
 							$mail_row['id']				= $temp['id'];
+							$mail_row['uidvalidity']	= $this->data['mailInfo']['UIDvalidity'];
+							$mail_row['mailbox']		= $mailbox_settings->mailbox;
 							$mail_row['flagged']		= $temp['flagged'];
 							$mail_row['unseen']			= $temp['unseen'];
 							$mail_row['subject']		= $temp['subject'];
@@ -104,33 +106,54 @@ class Mail extends CI_Controller {
 		### Run form validation
 		if ($this->form_validation->run())
 		{
-			$this->data['compose'] = true;
-			$this->load->library('email'); // load email library
-			$this->email->from('ikhsanrasyidi@gmail.com', 'DentalClinic');
-			$this->email->to($this->input->post('mail_to',TRUE));
-			$this->email->subject($this->input->post('mail_subject',TRUE));
-			$this->email->message($this->input->post('message',TRUE));
-			//$this->email->cc($this->input->post('cc',TRUE));
-						
-			 if (!empty($_FILES['attachment']['name'][0])) {
+			$attachment_path = "";		
+			if (!empty($_FILES['attachment']['name'][0])) {
 				
 				$attachment_path = md5(uniqid(rand(), true));
 				$files = $this->upload_files($attachment_path,$_FILES['attachment']);
-                if ($files === FALSE) {
-                    $this->data['error'] = $this->upload->display_errors();
-                }else{
+				if ($files === FALSE) {
+					$this->data['error'] = $this->upload->display_errors();
+				}else{
 					foreach ($files as $idx){
-						$this->email->attach(RES_DIR.'/img/'.$attachment_path.'/'.$idx); // attach file
+						$this->email->attach(RES_DIR.'/attachment/'.$attachment_path.'/'.$idx); // attach file
 					}
 				}
-            }                   
-
-			if ($this->email->send()){
-				$this->deleteAttachment(RES_DIR.'/img/'.$attachment_path);
-				redirect(base_url().'mail');
-			}else{
-				$this->deleteAttachment(RES_DIR.'/img/'.$attachment_path);
-				$this->data['error_send_email'] = "There is error in sending mail!";
+			}
+				
+			if($this->input->post('send_email')){
+				
+				$this->data['compose'] = true;
+				$this->load->library('email'); // load email library
+				$this->email->from('ikhsanrasyidi@gmail.com', 'DentalClinic');
+				$this->email->to($this->input->post('mail_to',TRUE));
+				$this->email->subject($this->input->post('mail_subject',TRUE));
+				$this->email->message($this->input->post('message',TRUE));
+				//$this->email->cc($this->input->post('cc',TRUE));
+			
+				if ($this->email->send()){
+					if($this->input->post('id_email')!=""){
+						$this->mailbox_model->save_send_mail("", $this->input->post('mail_to',TRUE), $this->input->post('mail_subject',TRUE), $this->input->post('message',TRUE), $attachment_path, time(), "SENT");
+					}else{
+						$this->mailbox_model->update_mail($this->input->post('id_email'), $this->input->post('mail_to',TRUE), $this->input->post('mail_subject',TRUE), $this->input->post('message',TRUE), $attachment_path, $time(), "SENT");
+					}
+					//$this->deleteAttachment(RES_DIR.'/attachment/'.$attachment_path);
+					redirect(base_url().'mail');
+				}else{
+					//$this->deleteAttachment(RES_DIR.'/attachment/'.$attachment_path);
+					$this->data['error_send_email'] = "There is error in sending mail!";
+				}
+			}else if($this->input->post('draft_email')){
+				if($this->input->post('id_email')!=""){
+					$this->mailbox_model->save_send_mail("", $this->input->post('mail_to',TRUE), $this->input->post('mail_subject',TRUE), $this->input->post('message',TRUE), $attachment_path, time(), "DRAFT");
+				}else{
+					$this->mailbox_model->update_mail($this->input->post('id_email'), $this->input->post('mail_to',TRUE), $this->input->post('mail_subject',TRUE), $this->input->post('message',TRUE), $attachment_path, $time(), "DRAFT");
+				}
+			}else if($this->input->post('delete_email')){
+				if($this->input->post('id_email')!=""){
+					$this->mailbox_model->save_send_mail("", $this->input->post('mail_to',TRUE), $this->input->post('mail_subject',TRUE), $this->input->post('message',TRUE), $attachment_path, time(), "DELETE");
+				}else{
+					$this->mailbox_model->update_mail($this->input->post('id_email'), $this->input->post('mail_to',TRUE), $this->input->post('mail_subject',TRUE), $this->input->post('message',TRUE), $attachment_path, $time(), "DELETE");
+				}
 			}
 		}	
 	
@@ -174,24 +197,24 @@ class Mail extends CI_Controller {
 			
 			if(!empty($mailbox_settings)){
 				
-				$this->address 	= "{".$mailbox_settings->mail_server."}".$mailbox_settings->mailbox;
-				$this->email 	= $mailbox_settings->email;
-				$this->password = $mailbox_settings->password;
-								
-				if ($inbox  = imap_open($this->address,$this->email,$this->password)){
-				
 				$url = parse_url($_SERVER['REQUEST_URI']);
 				if (isset($url['query'])){
 					parse_str($url['query'], $this->get);
-					$id = 'SUBJECT "'.urldecode($this->get['subject']).'" ON "'.urldecode($this->get['date']).'"';
+					$id = 'ON "'.urldecode($this->get['date']).'"';
 				}else{ $data['error'] = "Failed reading messages qualification!"; exit;}
 				
+				$this->address 	= "{".$mailbox_settings->mail_server."}".$this->get['mailbox'];
+				$this->email 	= $mailbox_settings->email;
+				$this->password = $mailbox_settings->password;
+				
+				if ($inbox  = imap_open($this->address,$this->email,$this->password)){
+				
 				$emails = imap_search($inbox,$id);
-					
+									
 					if ($emails) {
 						rsort($emails);
-										
-						$temp 					= $this->getMessage($inbox,$emails[0],"true");
+											
+						$temp 					= $this->getMessage($inbox,$this->get['id'],"true");
 						imap_setflag_full($inbox, $emails[0], "\\Seen", ST_UID); 
 						$data['id']				= $temp['id'];
 						$data['unseen']			= $temp['unseen'];
@@ -204,7 +227,7 @@ class Mail extends CI_Controller {
 						imap_close($inbox);
 						
 					} else {
-						$data['error'] = "Failed reading messages!";
+						$data['error'] = "Failed reading message!";
 					}
 						
 				} else { 
@@ -264,25 +287,25 @@ class Mail extends CI_Controller {
 			
 			if(!empty($mailbox_settings)){
 				
-				$this->address 	= "{".$mailbox_settings->mail_server."}".$mailbox_settings->mailbox;
+				$url = parse_url($_SERVER['REQUEST_URI']);
+				if (isset($url['query'])){
+					parse_str($url['query'], $this->get);
+					$id = 'ON "'.urldecode($this->get['date']).'"';
+				}else{ $data['error'] = "Failed reading messages qualification!"; exit;}
+				
+				$this->address 	= "{".$mailbox_settings->mail_server."}".$this->get['mailbox'];
 				$this->email 	= $mailbox_settings->email;
 				$this->password = $mailbox_settings->password;
 								
 				if ($inbox  = imap_open($this->address,$this->email,$this->password)){
-				
-				$url = parse_url($_SERVER['REQUEST_URI']);
-				if (isset($url['query'])){
-					parse_str($url['query'], $this->get);
-					$id = 'SUBJECT "'.urldecode($this->get['subject']).'" ON "'.urldecode($this->get['date']).'"';
-				}else{ $data['error'] = "Failed reading messages qualification!"; exit;}
-				
+								
 				$emails = imap_search($inbox,$id);
 					
 					if ($emails) {
 						if($this->get['action']=="true"){
-							imap_setflag_full($inbox, $emails[0], "\\".$this->get['flag'], ST_UID);
+							imap_setflag_full($inbox, $this->get['id'], "\\".$this->get['flag'], ST_UID);
 						}else{
-							imap_clearflag_full($inbox, $emails[0], "\\".$this->get['flag'], ST_UID);
+							imap_clearflag_full($inbox, $this->get['id'], "\\".$this->get['flag'], ST_UID);
 						}						
 						
 						imap_close($inbox);
@@ -384,12 +407,12 @@ class Mail extends CI_Controller {
    */
 	 private function upload_files($attachment_path,$files)
     {
-		if (!file_exists(RES_DIR."/img/".$attachment_path)) {
-			mkdir(RES_DIR."/img/".$attachment_path);
+		if (!file_exists(RES_DIR."/attachment/".$attachment_path)) {
+			mkdir(RES_DIR."/attachment/".$attachment_path);
 		}
 		
         $config = array(
-            'upload_path'   => RES_DIR.'/img/'.$attachment_path,
+            'upload_path'   => RES_DIR.'/attachment/'.$attachment_path,
 			'allowed_types' => '*',
             'overwrite'     => 1,                       
         );
@@ -490,8 +513,13 @@ class Mail extends CI_Controller {
     if ($details) {
       // Get the raw headers.
       $raw_header = imap_fetchheader($inbox, $messageId);
-
-      // Detect whether the message is an autoresponse.
+	  // $overview_ = imap_fetch_overview($inbox, $messageId);
+	 //echo "<pre>";
+		//print_r(htmlentities($raw_header));
+		//print_r(htmlentities($raw_header->message_id));
+		//echo htmlentities($overview->message_id);
+	 //echo "</pre>";   
+	  // Detect whether the message is an autoresponse.
       $autoresponse = $this->detectAutoresponder($raw_header);
 
       // Get some basic variables.
@@ -534,7 +562,7 @@ class Mail extends CI_Controller {
 	
       // Build the message.
       $message = array(
-	    'id'=>$messageId,
+	    'id'=>imap_uid($inbox, $messageId),
         //'raw_header' => $raw_header,
         'to' => $details->toaddress,
         'from' => $details->fromaddress,
@@ -614,18 +642,17 @@ class Mail extends CI_Controller {
 			if(!($attachments[$i]['is_attachment'])) {
 				unset($attachments[$i]);
 			}else{
-			
-			if(($action !== "true")&&($action !== "false")){
-				if($attachments[$i]['is_attachment']) {
-					$attachments[$i]['attachment'] = imap_fetchbody($inbox, $messageId, $i+1);
-					if($structure->parts[$i]->encoding == 3) { // 3 = BASE64
-						$attachments[$i]['attachment'] = base64_decode($attachments[$i]['attachment']);
-					}
-					elseif($structure->parts[$i]->encoding == 4) { // 4 = QUOTED-PRINTABLE
-						$attachments[$i]['attachment'] = quoted_printable_decode($attachments[$i]['attachment']);
+				if(($action !== "true")&&($action !== "false")){
+					if($attachments[$i]['is_attachment']) {
+						$attachments[$i]['attachment'] = imap_fetchbody($inbox, $messageId, $i+1);
+						if($structure->parts[$i]->encoding == 3) { // 3 = BASE64
+							$attachments[$i]['attachment'] = base64_decode($attachments[$i]['attachment']);
+						}
+						elseif($structure->parts[$i]->encoding == 4) { // 4 = QUOTED-PRINTABLE
+							$attachments[$i]['attachment'] = quoted_printable_decode($attachments[$i]['attachment']);
+						}
 					}
 				}
-			}
 			}
 			
 			
@@ -688,23 +715,23 @@ class Mail extends CI_Controller {
 		
 		if(!empty($mailbox_settings)){
 			
-			$this->address 	= "{".$mailbox_settings->mail_server."}".$mailbox_settings->mailbox;
+			$url = parse_url($_SERVER['REQUEST_URI']);
+			if (isset($url['query'])){
+				parse_str($url['query'], $this->get);
+				$id = 'ON "'.urldecode($this->get['date']).'"';
+			}else{ $data['error'] = "Failed reading messages qualification!"; exit;}
+						
+			$this->address 	= "{".$mailbox_settings->mail_server."}".$this->get['mailbox'];
 			$this->email 	= $mailbox_settings->email;
 			$this->password = $mailbox_settings->password;
 							
 			if ($inbox  = imap_open($this->address,$this->email,$this->password)){
-			
-			$url = parse_url($_SERVER['REQUEST_URI']);
-			if (isset($url['query'])){
-				parse_str($url['query'], $this->get);
-				$id = 'SUBJECT "'.urldecode($this->get['subject']).'" ON "'.urldecode($this->get['date']).'"';
-			}else{ $data['error'] = "Failed reading messages qualification!"; exit;}
-			
+						
 			$emails = imap_search($inbox,$id);
 						
 				if ($emails) {
 					rsort($emails);
-					$data = $this->getAttachment($inbox, $emails[0],$this->get['file']); 		
+					$data = $this->getAttachment($inbox, $this->get['id'],$this->get['file']); 		
 					   															
 					imap_close($inbox);
 					
@@ -728,18 +755,18 @@ class Mail extends CI_Controller {
 	foreach ($data as $id){
 		if($id['filename'] == $this->get['file']){
 			$attachment_path = md5(uniqid(rand(), true));
-			if (!file_exists(RES_DIR."/img/".$attachment_path)) {
-				mkdir(RES_DIR."/img/".$attachment_path);
+			if (!file_exists(RES_DIR."/attachment/".$attachment_path)) {
+				mkdir(RES_DIR."/attachment/".$attachment_path);
 			}
-			file_put_contents(RES_DIR."/img/".$attachment_path."/".$id['filename'], $id['attachment']);
+			file_put_contents(RES_DIR."/attachment/".$attachment_path."/".$id['filename'], $id['attachment']);
 			
 			header("Content-Type: application/octet-stream");
 			header("Content-Transfer-Encoding: Binary");
 			header("Content-disposition: attachment; filename=\"".$id['filename']."\""); 
-			readfile(base_url().RES_DIR."/img/".$attachment_path."/".$id['filename']);
+			readfile(base_url().RES_DIR."/attachment/".$attachment_path."/".$id['filename']);
 			
-			unlink(RES_DIR."/img/".$attachment_path."/".$id['filename']);
-			rmdir(RES_DIR."/img/".$attachment_path);
+			unlink(RES_DIR."/attachment/".$attachment_path."/".$id['filename']);
+			rmdir(RES_DIR."/attachment/".$attachment_path);
 			
 		}
 	}
@@ -936,6 +963,7 @@ class Mail extends CI_Controller {
       'unread' => $info->unseen,
       'recent' => $info->recent,
       'total' => $info->messages,
+      'UIDvalidity' => $info->uidvalidity
     );
     return $mailInfo;
   }

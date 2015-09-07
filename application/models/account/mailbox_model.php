@@ -45,6 +45,26 @@ class Mailbox_model extends CI_Model {
 
 	// --------------------------------------------------------------------
 
+	
+	//mail ================================================================
+	function save_send_mail($flag=null, $to=null, $subject=null, $body=null, $attachment=null, $date=null, $group=null){
+		$this->db->insert('mailbox', array('flag' => $flag, 'to' => $to, 'subject' => $subject, 'body' => $body, 'attachment' => $attachment, 'group'=>$group));
+		return $this->db->insert_id();
+	}
+	
+	// --------------------------------------------------------------------
+	
+	function delete_mail($id_mail){
+		$this->db->delete('mailbox', array('id_mail' => $id_mail));
+	}
+	
+	// --------------------------------------------------------------------
+	
+	function update_mail($id_mail, $flag=null, $to=null, $subject=null, $body=null, $attachment=null, $date=null, $group=null){
+		$this->db->update('mailbox', array('flag' => $flag, 'to' => $to, 'subject' => $subject, 'body' => $body, 'attachment' => $attachment, 'group'=>$group), array('id_mail' => $id_mail));
+	}
+	
+	// --------------------------------------------------------------------
 }
 
 

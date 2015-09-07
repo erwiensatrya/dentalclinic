@@ -13,25 +13,14 @@
  * PHPMailer Version 5.2.10+ (August 1, 2015).
  */
 
-class MY_Email extends CI_Email {
+class MY_Email {
 
-    public $phpmailer;  // This property has been made public for testing purposes.
-
-    protected $mailer_engine = 'codeigniter';
-    protected $CI;
-
-    protected $_is_ci_3 = NULL;
-
-    protected static $protocols = array('mail', 'sendmail', 'smtp');
-    protected static $mailtypes = array('html', 'text');
-    protected static $encodings_ci = array('8bit', '7bit');
-    protected static $encodings_phpmailer = array('8bit', '7bit', 'binary', 'base64', 'quoted-printable');
-
-    protected $priority_raw = 3;
-    protected $_encoding_raw = '8bit';
-    protected $smtp_debug_raw = 0;
-
-    public function __construct($config = array()) {
+	public $address = null;
+	public $email = null;
+	public $password = null;
+	
+		
+    public function __construct($adress, $email, $password) {
 
         $this->_is_ci_3 = (bool) ((int) CI_VERSION >= 3);
 

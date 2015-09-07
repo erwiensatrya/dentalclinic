@@ -6,6 +6,9 @@
      <?php echo $this->load->view('head'); ?>
 	 <link href="<?php echo base_url().RES_DIR; ?>/adminlte/plugins/fullcalendar/fullcalendar.min.css" rel="stylesheet" type="text/css" />
      <link href="<?php echo base_url().RES_DIR; ?>/adminlte/plugins/fullcalendar/fullcalendar.print.css" rel="stylesheet" type="text/css" media="print" />
+	 <!-- daterange picker -->
+     <link href="<?php echo base_url().RES_DIR; ?>/adminlte/plugins/daterangepicker/daterangepicker-bs3.css" rel="stylesheet" type="text/css" />
+  
   </head>
   <body class="skin-blue sidebar-mini">
     <div class="wrapper">
@@ -31,61 +34,97 @@
         <!-- Main content -->
         <section class="content">
           <div class="row">
+		  
+		<?php if($this->authorization->is_permitted('manage_calendar')){ ?>
             <div class="col-md-3">
               <div class="box box-solid">
                 <div class="box-header with-border">
-                  <h4 class="box-title">Draggable Events</h4>
+                  <h4 class="box-title">Dentist</h4>
                 </div>
                 <div class="box-body">
-                  <!-- the events -->
-                  <div id="external-events">
-                    <div class="external-event bg-green">Lunch</div>
-                    <div class="external-event bg-yellow">Go home</div>
-                    <div class="external-event bg-aqua">Do homework</div>
-                    <div class="external-event bg-light-blue">Work on UI design</div>
-                    <div class="external-event bg-red">Sleep tight</div>
-                    <div class="checkbox">
-                      <label for="drop-remove">
-                        <input type="checkbox" id="drop-remove" />
-                        remove after drop
-                      </label>
-                    </div>
-                  </div>
+                  <!-- dentist -->
+				  <div style="background-color:#000;">
+                        <ul class="contacts-list">
+                          <li>
+                            <a href="#">
+                              <img class="contacts-list-img" src="dist/img/user1-128x128.jpg">
+                              <div class="contacts-list-info">
+                                <span class="contacts-list-name">
+                                  Count Dracula
+                                  <small class="contacts-list-date pull-right">2/28/2015</small>
+                                </span>
+                                <span class="contacts-list-msg">Available</span>
+                              </div><!-- /.contacts-list-info -->
+                            </a>
+                          </li><!-- End Contact Item -->
+                          <li>
+                            <a href="#">
+                              <img class="contacts-list-img" src="dist/img/user7-128x128.jpg">
+                              <div class="contacts-list-info">
+                                <span class="contacts-list-name">
+                                  Sarah Doe
+                                  <small class="contacts-list-date pull-right">2/23/2015</small>
+                                </span>
+                                <span class="contacts-list-msg">Available</span>
+                              </div><!-- /.contacts-list-info -->
+                            </a>
+                          </li><!-- End Contact Item -->
+                          <li>
+                            <a href="#">
+                              <img class="contacts-list-img" src="dist/img/user3-128x128.jpg">
+                              <div class="contacts-list-info">
+                                <span class="contacts-list-name">
+                                  Nadia Jolie
+                                  <small class="contacts-list-date pull-right">2/20/2015</small>
+                                </span>
+                                <span class="contacts-list-msg">Available</span>
+                              </div><!-- /.contacts-list-info -->
+                            </a>
+                          </li><!-- End Contact Item -->
+                          <li>
+                            <a href="#">
+                              <img class="contacts-list-img" src="dist/img/user5-128x128.jpg">
+                              <div class="contacts-list-info">
+                                <span class="contacts-list-name">
+                                  Nora S. Vans
+                                  <small class="contacts-list-date pull-right">2/10/2015</small>
+                                </span>
+                                <span class="contacts-list-msg">On leave</span>
+                              </div><!-- /.contacts-list-info -->
+                            </a>
+                          </li><!-- End Contact Item -->
+                          <li>
+                            <a href="#">
+                              <img class="contacts-list-img" src="dist/img/user6-128x128.jpg">
+                              <div class="contacts-list-info">
+                                <span class="contacts-list-name">
+                                  John K.
+                                  <small class="contacts-list-date pull-right">1/27/2015</small>
+                                </span>
+                                <span class="contacts-list-msg">Available</span>
+                              </div><!-- /.contacts-list-info -->
+                            </a>
+                          </li><!-- End Contact Item -->
+                          <li>
+                            <a href="#">
+                              <img class="contacts-list-img" src="dist/img/user8-128x128.jpg">
+                              <div class="contacts-list-info">
+                                <span class="contacts-list-name">
+                                  Kenneth M.
+                                  <small class="contacts-list-date pull-right">1/4/2015</small>
+                                </span>
+                                <span class="contacts-list-msg">On Leave</span>
+                              </div><!-- /.contacts-list-info -->
+                            </a>
+                          </li><!-- End Contact Item -->
+                        </ul><!-- /.contatcts-list -->
+                      </div>
                 </div><!-- /.box-body -->
               </div><!-- /. box -->
-              <div class="box box-solid">
-                <div class="box-header with-border">
-                  <h3 class="box-title">Create Event</h3>
-                </div>
-                <div class="box-body">
-                  <div class="btn-group" style="width: 100%; margin-bottom: 10px;">
-                    <!--<button type="button" id="color-chooser-btn" class="btn btn-info btn-block dropdown-toggle" data-toggle="dropdown">Color <span class="caret"></span></button>-->
-                    <ul class="fc-color-picker" id="color-chooser">
-                      <li><a class="text-aqua" href="#"><i class="fa fa-square"></i></a></li>
-                      <li><a class="text-blue" href="#"><i class="fa fa-square"></i></a></li>
-                      <li><a class="text-light-blue" href="#"><i class="fa fa-square"></i></a></li>
-                      <li><a class="text-teal" href="#"><i class="fa fa-square"></i></a></li>
-                      <li><a class="text-yellow" href="#"><i class="fa fa-square"></i></a></li>
-                      <li><a class="text-orange" href="#"><i class="fa fa-square"></i></a></li>
-                      <li><a class="text-green" href="#"><i class="fa fa-square"></i></a></li>
-                      <li><a class="text-lime" href="#"><i class="fa fa-square"></i></a></li>
-                      <li><a class="text-red" href="#"><i class="fa fa-square"></i></a></li>
-                      <li><a class="text-purple" href="#"><i class="fa fa-square"></i></a></li>
-                      <li><a class="text-fuchsia" href="#"><i class="fa fa-square"></i></a></li>
-                      <li><a class="text-muted" href="#"><i class="fa fa-square"></i></a></li>
-                      <li><a class="text-navy" href="#"><i class="fa fa-square"></i></a></li>
-                    </ul>
-                  </div><!-- /btn-group -->
-                  <div class="input-group">
-                    <input id="new-event" type="text" class="form-control" placeholder="Event Title">
-                    <div class="input-group-btn">
-                      <button id="add-new-event" type="button" class="btn btn-primary btn-flat">Add</button>
-                    </div><!-- /btn-group -->
-                  </div><!-- /input-group -->
-                </div>
-              </div>
             </div><!-- /.col -->
-            <div class="col-md-9">
+		<?php } ?>
+		
+            <div class="<?php if($this->authorization->is_permitted('manage_calendar')){ ?>col-md-9<?php }else{ ?>col-md-12<?php } ?>">
               <div class="box box-primary">
                 <div class="box-body no-padding">
                   <!-- THE CALENDAR -->
@@ -94,9 +133,65 @@
               </div><!-- /. box -->
             </div><!-- /.col -->
           </div><!-- /.row -->
+		  	 
+		  <!--Event Modal-->
+		  <div class="example-modal">
+            <div id="eventModal" class="modal">
+              <div class="modal-dialog">
+                <div class="modal-content">
+                  <div class="modal-header">
+                    <button type="button" class="close" data-dismiss="modal" aria-label="Close" onclick="$('#eventModal').hide();"><span aria-hidden="true" >×</span></button>
+                    <h4 class="modal-title">Modal Default</h4>
+                  </div>
+                  <form class="form-horizontal">
+                  <div class="modal-body">
+                    <div class="form-group">
+                      <label for="title" class="col-sm-2 control-label">Id</label>
+                      <div class="col-sm-10">
+                        <input class="form-control" placeholder="id" name="id" type="text">
+                      </div>
+                    </div> 
+					<div class="form-group">
+                      <label for="title" class="col-sm-2 control-label">Title</label>
+                      <div class="col-sm-10">
+                        <input class="form-control" id="title" placeholder="Title" name="title" type="text">
+                      </div>
+                    </div>
+                    <div class="form-group">
+                      <label for="description" class="col-sm-2 control-label">Desciption</label>
+                      <div class="col-sm-10">
+                        <input class="form-control" id="description" placeholder="Description" name="description"  type="text">
+                      </div>
+                    </div>
+                   <div class="form-group">
+                    <label for="datrange" class="col-sm-2 control-label" >Date and time range</label>
+                      <div class="col-sm-10">
+					 <div class="input-group">
+                      <div class="input-group-addon">
+                        <i class="fa fa-clock-o"></i>
+                      </div>
+                      <input class="form-control pull-right active" id="reservationtime" name="reservationtime" type="text">
+                    </div><!-- /.input group -->
+                    </div>
+                  </div>
+                  </div><!-- /.box-body -->
+                  <div class="modal-footer">
+                    <button type="button" class="btn btn-default" onclick="$('#eventModal').hide();">Cancel</button>
+                    <button type="submit" class="btn btn-info pull-right">Submit</button>
+                  </div><!-- /.box-footer -->
+                </form>
+                </div><!-- /.modal-content -->
+              </div><!-- /.modal-dialog -->
+            </div><!-- /.modal -->
+          </div>
+		  <!--/.Event Modal-->
+		  
         </section><!-- /.content -->
       </div><!-- /.content-wrapper -->
-
+	  
+		
+			  
+			  
        <?php echo $this->load->view('footer'); ?>
 
     </div><!-- ./wrapper -->
@@ -104,40 +199,15 @@
     
     <!-- Page specific script -->
     <script type="text/javascript">
+	
+	 $('#reservationtime').daterangepicker({timePicker: true, timePickerIncrement: 5, format: 'DD/MM/YYYY h:mm A'});
+	 
       $(function () {
-
-        /* initialize the external events
-         -----------------------------------------------------------------*/
-        function ini_events(ele) {
-          ele.each(function () {
-
-            // create an Event Object (http://arshaw.com/fullcalendar/docs/event_data/Event_Object/)
-            // it doesn't need to have a start or end
-            var eventObject = {
-              title: $.trim($(this).text()) // use the element's text as the event title
-            };
-
-            // store the Event Object in the DOM element so we can get to it later
-            $(this).data('eventObject', eventObject);
-
-            // make the event draggable using jQuery UI
-            $(this).draggable({
-              zIndex: 1070,
-              revert: true, // will cause the event to go back to its
-              revertDuration: 0  //  original position after the drag
-            });
-
-          });
-        }
-        ini_events($('#external-events div.external-event'));
 
         /* initialize the calendar
          -----------------------------------------------------------------*/
         //Date for the calendar events (dummy data)
-        var date = new Date();
-        var d = date.getDate(),
-                m = date.getMonth(),
-                y = date.getFullYear();
+        
         $('#calendar').fullCalendar({
           header: {
             left: 'prev,next today',
@@ -150,120 +220,40 @@
             week: 'week',
             day: 'day'
           },
-          //Random default events
-          events: [
-            {
-              id: '01',
-              title: 'All Day Event',
-              start: new Date(y, m, 1),
-              backgroundColor: "#f56954", //red
-              borderColor: "#f56954" //red
-            },
-            {
-               id: '02',
-			  title: 'Long Event',
-              start: new Date(y, m, d - 5),
-              end: new Date(y, m, d - 2),
-              backgroundColor: "#f39c12", //yellow
-              borderColor: "#f39c12" //yellow
-            },
-            {
-               id: '03',
-			  title: 'Meeting',
-              start: new Date(y, m, d, 10, 30),
-              allDay: false,
-              backgroundColor: "#0073b7", //Blue
-              borderColor: "#0073b7" //Blue
-            },
-            {
-               id: '04',
-			  title: 'Lunch',
-              start: new Date(y, m, d, 12, 0),
-              end: new Date(y, m, d, 14, 0),
-              allDay: false,
-              backgroundColor: "#00c0ef", //Info (aqua)
-              borderColor: "#00c0ef" //Info (aqua)
-            },
-            {
-               id: '05',
-			  title: 'Birthday Party',
-              start: new Date(y, m, d + 1, 19, 0),
-              end: new Date(y, m, d + 1, 22, 30),
-              allDay: false,
-              backgroundColor: "#00a65a", //Success (green)
-              borderColor: "#00a65a" //Success (green)
-            },
-            {
-               id: '06',
-			  title: 'Click for Google',
-              start: new Date(y, m, 28),
-              end: new Date(y, m, 29),
-              url: 'http://google.com/',
-              backgroundColor: "#3c8dbc", //Primary (light-blue)
-              borderColor: "#3c8dbc" //Primary (light-blue)
-            }
-          ],
-          editable: true,
-          droppable: true, // this allows things to be dropped onto the calendar !!!
-          drop: function (date, allDay) { // this function is called when something is dropped
+          //Get events
+          events: '<?php echo base_url()."calendar/events";?>',
+          editable: false,
+          droppable: false, // this allows things to be dropped onto the calendar !!!
+		  dayClick: function(date, jsEvent, view) {
 
-            // retrieve the dropped element's stored Event Object
-            var originalEventObject = $(this).data('eventObject');
+				$('#eventModal [name="id"]').val("");
+				$('#eventModal [name="title"]').val("");
+				$('#eventModal [name="reservationtime"]').val(date.format("DD/MM/YYYY")+" 12:00 AM - "+date.format("DD/MM/YYYY")+" 11:59 PM");
+				$('#eventModal [name="reservationtime"]').daterangepicker({startDate: date.format("DD/MM/YYYY")+" 12:00 AM", endDate: date.format("DD/MM/YYYY")+" 11:59 PM", timePicker: true, timePickerIncrement: 5, format: 'DD/MM/YYYY h:mm A'});			
+				$('.modal-title').html("Add New Event");
+				$('#eventModal').show();
+				
+		  },
+		  eventClick: function(calEvent, jsEvent, view) {
+			  
+				$('#eventModal [name="id"]').val(calEvent.id);
+				$('#eventModal [name="title"]').val(calEvent.title);
+				$('#eventModal [name="reservationtime"]').val(calEvent.start.format("DD/MM/YYYY h:mm A")+" - "+calEvent.end.format("DD/MM/YYYY h:mm A"));
+				$('#eventModal [name="reservationtime"]').daterangepicker({startDate: calEvent.start.format("DD/MM/YYYY h:mm A"), endDate: calEvent.end.format("DD/MM/YYYY h:mm A"), timePicker: true, timePickerIncrement: 5, format: 'DD/MM/YYYY h:mm A'});			
+				$('.modal-title').html("Edit Event");
+				$('#eventModal').show();
 
-            // we need to copy it, so that multiple events don't have a reference to the same object
-            var copiedEventObject = $.extend({}, originalEventObject);
-
-            // assign it the date that was reported
-            copiedEventObject.start = date;
-            copiedEventObject.allDay = allDay;
-            copiedEventObject.backgroundColor = $(this).css("background-color");
-            copiedEventObject.borderColor = $(this).css("border-color");
-
-            // render the event on the calendar
-            // the last `true` argument determines if the event "sticks" (http://arshaw.com/fullcalendar/docs/event_rendering/renderEvent/)
-            $('#calendar').fullCalendar('renderEvent', copiedEventObject, true);
-
-            // is the "remove after drop" checkbox checked?
-            if ($('#drop-remove').is(':checked')) {
-              // if so, remove the element from the "Draggable Events" list
-              $(this).remove();
-            }
-
-          }
+		  }
         });
 
-        /* ADDING EVENTS */
-        var currColor = "#3c8dbc"; //Red by default
-        //Color chooser button
-        var colorChooser = $("#color-chooser-btn");
-        $("#color-chooser > li > a").click(function (e) {
-          e.preventDefault();
-          //Save color
-          currColor = $(this).css("color");
-          //Add color effect to button
-          $('#add-new-event').css({"background-color": currColor, "border-color": currColor});
-        });
-        $("#add-new-event").click(function (e) {
-          e.preventDefault();
-          //Get value and make sure it is not null
-          var val = $("#new-event").val();
-          if (val.length == 0) {
-            return;
-          }
-
-          //Create events
-          var event = $("<div />");
-          event.css({"background-color": currColor, "border-color": currColor, "color": "#fff"}).addClass("external-event");
-          event.html(val);
-          $('#external-events').prepend(event);
-
-          //Add draggable funtionality
-          ini_events(event);
-
-          //Remove event from text input
-          $("#new-event").val("");
-        });
+       
+			
       });
+	  
+	  function addEvent(){
+		  
+		  $('#calendar').fullCalendar( 'refetchEvents' );
+	  }
     </script>
   </body>
 </html>

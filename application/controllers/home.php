@@ -7,7 +7,7 @@ class Home extends CI_Controller {
 		parent::__construct();
 
 		// Load the necessary stuff...
-		$this->load->helper(array('language', 'url', 'form', 'account/ssl','photo'));
+		$this->load->helper(array('language', 'url', 'form', 'account/ssl','photo','mailbox'));
 		$this->load->library(array('account/authentication', 'account/authorization'));
 		$this->load->model(array('account/account_model','account/account_details_model'));
 	}
@@ -20,6 +20,10 @@ class Home extends CI_Controller {
 		{
 			$data['account'] = $this->account_model->get_by_id($this->session->userdata('account_id'));
 			$data['account_details'] = $this->account_details_model->get_by_account_id($this->session->userdata('account_id'));
+			if($this->authorization->is_permitted('manage_mailbox')){
+				$this->load->helper('mailbox');
+				$data['mailinfo'] = mailInfo();
+			}
 		}
 
 		$this->load->view('home', isset($data) ? $data : NULL);

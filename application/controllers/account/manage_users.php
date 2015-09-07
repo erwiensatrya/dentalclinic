@@ -13,7 +13,7 @@ class Manage_users extends CI_Controller {
 
     // Load the necessary stuff...
     $this->load->config('account/account');
-    $this->load->helper(array('date', 'language', 'account/ssl', 'url', 'photo'));
+    $this->load->helper(array('date', 'language', 'account/ssl', 'url', 'photo', 'mailbox'));
     $this->load->library(array('account/authentication', 'account/authorization', 'form_validation'));
     $this->load->model(array('account/account_model', 'account/account_details_model', 'account/acl_permission_model', 'account/acl_role_model', 'account/rel_account_permission_model', 'account/rel_account_role_model', 'account/rel_role_permission_model'));
     $this->load->language(array('general', 'account/manage_users', 'account/account_settings', 'account/account_profile', 'account/sign_up', 'account/account_password'));
@@ -47,6 +47,11 @@ class Manage_users extends CI_Controller {
 	$data['account'] = $this->account_model->get_by_id($this->session->userdata('account_id'));
 	$data['account_details'] = $this->account_details_model->get_by_account_id($this->session->userdata('account_id'));
 		
+	if($this->authorization->is_permitted('manage_mailbox')){
+		$this->load->helper('mailbox');
+		$data['mailinfo'] = mailInfo();
+	}
+			
     // Get all user information
     $all_accounts = $this->account_model->get();
     $all_account_details = $this->account_details_model->get();
@@ -263,9 +268,9 @@ class Manage_users extends CI_Controller {
 
         // Update account details
         $attributes = array();
-        $attributes['fullname'] = $this->input->post('users_fullname', TRUE) ? $this->input->post('users_fullname', TRUE) : NULL;
-        $attributes['firstname'] = $this->input->post('users_firstname', TRUE) ? $this->input->post('users_firstname', TRUE) : NULL;
+        $attributes['firstname']= $this->input->post('users_firstname', TRUE) ? $this->input->post('users_firstname', TRUE) : NULL;
         $attributes['lastname'] = $this->input->post('users_lastname', TRUE) ? $this->input->post('users_lastname', TRUE) : NULL;
+		$attributes['fullname'] = $this->input->post('users_fullname', TRUE) ? $this->input->post('users_fullname', TRUE) : trim($attributes['firstname']." ".$attributes['lastname']);
         $this->account_details_model->update($id, $attributes);
 
         // Apply roles

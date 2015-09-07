@@ -13,7 +13,7 @@ class Manage_roles extends CI_Controller {
 
     // Load the necessary stuff...
     $this->load->config('account/account');
-    $this->load->helper(array('date', 'language', 'account/ssl', 'url', 'photo'));
+    $this->load->helper(array('date', 'language', 'account/ssl', 'url', 'photo', 'mailbox'));
     $this->load->library(array('account/authentication', 'account/authorization', 'form_validation'));
     $this->load->model(array('account/account_model', 'account/account_details_model', 'account/acl_permission_model', 'account/acl_role_model', 'account/rel_account_permission_model', 'account/rel_account_role_model', 'account/rel_role_permission_model'));
     $this->load->language(array('general', 'account/manage_roles', 'account/account_settings', 'account/account_profile', 'account/sign_up', 'account/account_password'));
@@ -47,7 +47,12 @@ class Manage_roles extends CI_Controller {
 	// Retrieve sign in user
 	$data['account'] = $this->account_model->get_by_id($this->session->userdata('account_id'));
 	$data['account_details'] = $this->account_details_model->get_by_account_id($this->session->userdata('account_id'));
-		
+	
+	if($this->authorization->is_permitted('manage_mailbox')){
+		$this->load->helper('mailbox');
+		$data['mailinfo'] = mailInfo();
+	}
+			
     // Get all permossions, roles, and role_permissions
     $roles = $this->acl_role_model->get();
     $permissions = $this->acl_permission_model->get();

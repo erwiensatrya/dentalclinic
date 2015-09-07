@@ -7,7 +7,7 @@ class File extends CI_Controller {
 		parent::__construct();
 
 		// Load the necessary stuff...
-		$this->load->helper(array('language', 'url', 'form', 'account/ssl', 'photo'));
+		$this->load->helper(array('language', 'url', 'form', 'account/ssl', 'photo', 'mailbox'));
 		$this->load->library(array('account/authentication', 'account/authorization'));
 		$this->load->model(array('account/account_model','account/account_details_model'));
 		$this->load->language(array('general', 'account/account_profile','dashboard'));
@@ -30,6 +30,10 @@ class File extends CI_Controller {
 		{
 			$this->data['account'] = $this->account_model->get_by_id($this->session->userdata('account_id'));
 			$this->data['account_details'] = $this->account_details_model->get_by_account_id($this->session->userdata('account_id'));
+			if($this->authorization->is_permitted('manage_mailbox')){
+				$this->load->helper('mailbox');
+				$data['mailinfo'] = mailInfo();
+			}
 		}
 	  
 		//$this->data['scan'] = $this->scan($this->session->userdata('account_id'),FALSE);
