@@ -1,11 +1,5 @@
-<<<<<<< HEAD
 RewriteEngine on 
 RewriteRule ^$ /index.php [L] 
 RewriteCond $1 !^(index\.php|resource|application|system|user_guide|bootstrap|robots\.txt|favicon\.ico) 
 RewriteRule ^(.*)$ ./index.php/$1 [L] 
-=======
-RewriteEngine On
-RewriteCond %{REQUEST_FILENAME} !-f
-RewriteCond %{REQUEST_FILENAME} !-d
-RewriteRule ^(.*)$ index.php/$1 [L]
->>>>>>> erwiensatrya/v0.1
+
